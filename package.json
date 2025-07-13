@@ -1,10 +1,10 @@
 {
-  "name": "ssh-manager",
+  "name": "sshield",
   "version": "1.0.0",
   "description": "Secure SSH key management with project-based namespaces",
   "main": "dist/index.js",
   "bin": {
-    "ssh-manager": "dist/index.js"
+    "sshield": "dist/index.js"
   },
   "scripts": {
     "build": "tsc",
@@ -12,7 +12,7 @@
     "dev": "ts-node src/index.ts",
     "lint": "eslint --ext .ts src/",
     "test": "jest",
-    "prepare": "npm run build"
+    "prepare": "pnpm run build"
   },
   "keywords": [
     "ssh",
