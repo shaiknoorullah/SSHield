@@ -1,0 +1,11 @@
+/** @format */
+{
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {
+		"composite": true,
+		"incremental": true,
+		"sourceMap": true,
+		"declaration": true,
+		"declarationMap": true
+	}
+}

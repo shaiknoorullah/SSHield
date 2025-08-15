@@ -1,0 +1,11 @@
+/** @format */
+{
+	"extends": "./tsconfig.base.json",
+	"compilerOptions": {
+		"noEmit": true,
+		"types": ["mocha", "chai", "node"],
+		"sourceMap": true
+	},
+	"include": ["src/**/*", "src/**/*.spec.ts"],
+	"exclude": ["node_modules", "dist"]
+}

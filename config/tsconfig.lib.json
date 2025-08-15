@@ -1,0 +1,19 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"module": "nodenext",
+		"moduleResolution": "nodenext",
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"declaration": true,
+		"types": ["node"],
+		"resolveJsonModule": true,
+		"resolvePackageJsonImports": true,
+		"resolvePackageJsonExports": true
+	},
+	"include": [
+		"src/**/*.ts",
+		"src/**/*.json",
+		"src/static/testing/mocha/.mocharc.ts"
+	]
+}

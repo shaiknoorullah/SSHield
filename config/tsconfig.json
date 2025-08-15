@@ -1,0 +1,25 @@
+{
+	"extends": "../tsconfig.json",
+	"compilerOptions": {
+		"module": "commonjs",
+		"forceConsistentCasingInFileNames": true,
+		"strict": true,
+		"importHelpers": true,
+		"noImplicitOverride": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"paths": {
+			
+		}
+	},
+	"files": [],
+	"include": ["src/**/*.ts", "src/**/*.json"],
+	"references": [
+		{
+			"path": "./src/typescript/tsconfig.lib.json"
+		}
+	],
+}

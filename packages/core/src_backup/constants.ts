@@ -2,12 +2,12 @@ import * as os from "os";
 import * as path from "path";
 
 // App name and version
-export const APP_NAME = "ssh-manager";
+export const APP_NAME = "sshield";
 export const APP_VERSION = "1.0.0";
 
 // Base directories
 export const HOME_DIR = os.homedir();
-export const BASE_DIR = path.join(HOME_DIR, ".ssh-manager");
+export const BASE_DIR = path.join(HOME_DIR, ".sshield");
 export const KEYS_DIR = path.join(BASE_DIR, "keys");
 export const CONFIG_DIR = path.join(BASE_DIR, "config");
 export const LOGS_DIR = path.join(BASE_DIR, "logs");
