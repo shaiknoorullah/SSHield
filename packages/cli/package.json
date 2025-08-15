@@ -1,0 +1,30 @@
+{
+  "name": "cli",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "ts-mocha --paths -p ./tsconfig.spec.json src/**/*.spec.ts",
+    "build": "tsup"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.10.0",
+  "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@sshield/config": "workspace:^",
+    "@types/chai": "^5.2.2",
+    "@types/mocha": "^10.0.10",
+    "@types/sinon": "^17.0.4",
+    "chai": "^5.2.1",
+    "mocha": "^11.7.1",
+    "nyc": "^17.1.0",
+    "sinon": "^21.0.0",
+    "ts-mocha": "^11.1.0",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.3"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "version": "6.0",
+  "nxVersion": "21.2.2",
+  "pathMappings": {},
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "nonProjectFiles": [
+      {
+        "file": ".gitignore",
+        "hash": "4070636367282582647"
+      },
+      {
+        "file": "README.md",
+        "hash": "17030659868046573507"
+      },
+      {
+        "file": "ROADMAP.md",
+        "hash": "16480809728302654931"
+      },
+      {
+        "file": "nx.json",
+        "hash": "18336426213955174907"
+      },
+      {
+        "file": "package.json",
+        "hash": "9906565705781003162"
+      },
+      {
+        "file": "packages/core/package.json.backup",
+        "hash": "16897623061117680861"
+      },
+      {
+        "file": "packages/core/src_backup/commands/agent.ts",
+        "hash": "13513784229154861585"
+      },
+      {
+        "file": "packages/core/src_backup/commands/connection.ts",
+        "hash": "5249625492224251482"
+      },
+      {
+        "file": "packages/core/src_backup/commands/init.ts",
+        "hash": "9701238279054566807"
+      },
+      {
+        "file": "packages/core/src_backup/commands/key-manager.ts",
+        "hash": "5984491973432612876"
+      },
+      {
+        "file": "packages/core/src_backup/commands/project.ts",
+        "hash": "18306129819231404094"
+      },
+      {
+        "file": "packages/core/src_backup/constants.ts",
+        "hash": "7675334330066972557"
+      },
+      {
+        "file": "packages/core/src_backup/index.ts",
+        "hash": "1816958002243486904"
+      },
+      {
+        "file": "packages/core/src_backup/types/index.ts",
+        "hash": "11823265358146480748"
+      },
+      {
+        "file": "packages/core/src_backup/utils/config.ts",
+        "hash": "11939319635901744196"
+      },
+      {
+        "file": "packages/core/src_backup/utils/filesystem.ts",
+        "hash": "86928808210616833"
+      },
+      {
+        "file": "packages/core/src_backup/utils/ssh.ts",
+        "hash": "18170319677470772566"
+      },
+      {
+        "file": "packages/core/src_backup/utils/ui.ts",
+        "hash": "15254761485844159654"
+      },
+      {
+        "file": "pnpm-lock.yaml",
+        "hash": "2488050919218374343"
+      },
+      {
+        "file": "pnpm-workspace.yaml",
+        "hash": "9727375310959367618"
+      },
+      {
+        "file": "tsconfig.json",
+        "hash": "1851435242678972897"
+      }
+    ],
+    "projectFileMap": {}
+  }
+}

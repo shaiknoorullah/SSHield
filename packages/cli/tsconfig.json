@@ -1,0 +1,11 @@
+{
+	"extends": "../../config/ts/tsconfig.lib.json",
+	"compilerOptions": {
+		"paths": {
+			"@sshield/config/*": ["../../config/*"],
+			"@sshield/config/ts/base": ["../../config/ts/tsconfig.base.json"],
+			"@sshield/config/ts/lib": ["../../config/ts/tsconfig.lib.json"],
+			"@sshield/config/ts/spec": ["../../config/ts/tsconfig.spec.json"]
+		}
+	}
+}
