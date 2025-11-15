@@ -1,0 +1,10 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+coverage/
+
+# Config files that shouldn't be linted
+*.config.js
+*.config.mjs

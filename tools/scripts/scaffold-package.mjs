@@ -80,6 +80,7 @@ function scaffoldPackage(options) {
 			build: "nx build",
 			"build:bundle": "nx bundle",
 			"build:binary": "nx pkg",
+			"build:package": "nx package",
 			test: "nx test",
 			"test:coverage": "nx coverage",
 			docs: "nx docs",
@@ -195,6 +196,17 @@ function scaffoldPackage(options) {
 		outputs: [`${options.directory}/${name}/bin`],
 		options: {
 			command: `pnpm --filter @${scope}/${name} exec pkg dist/index.js --config pkg.config.json --output bin/${name}`,
+		},
+	}
+
+	// Add package target for distribution packages (.deb, .rpm, PKGBUILD)
+	projectJson.targets.package = {
+		executor: "nx:run-commands",
+		dependsOn: ["pkg"],
+		outputs: [`${options.directory}/${name}/dist`],
+		options: {
+			command: `node ../../tools/scripts/package-dist.mjs`,
+			cwd: `${options.directory}/${name}`,
 		},
 	}
 

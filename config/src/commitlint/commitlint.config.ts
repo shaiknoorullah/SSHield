@@ -156,7 +156,8 @@ const commitlintConfig: UserConfig = {
             emoji: "♻️",
           },
           maintenance: {
-            description: "Maintenance tasks that do not modify src or test files",
+            description:
+              "Maintenance tasks that do not modify src or test files",
             title: "Maintenance",
             emoji: "🔧",
           },

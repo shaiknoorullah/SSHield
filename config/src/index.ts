@@ -30,3 +30,7 @@ export * from "./knip/knip.config";
 
 // Development Tools
 export * from "./devtools/devtools.config";
+
+// Package Distribution
+export * from "./nfpm/nfpm.config";
+export * from "./aur/pkgbuild.config";
