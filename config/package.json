@@ -8,21 +8,30 @@
     "build": "tsc -p ./tsconfig.lib.json"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
+    "@commitlint/types": "^19.6.0",
     "@eslint/js": "^9.31.0",
-    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@release-it/conventional-changelog": "^10.0.1",
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^18.16.9",
+    "@types/react": "^18.3.0",
     "@typescript-eslint/parser": "^8.38.0",
     "@typescript-eslint/utils": "^8.38.0",
+    "c8": "^10.1.2",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "globals": "^16.3.0",
-    "nyc": "^17.1.0",
+    "knip": "^5.38.0",
+    "react-devtools-core": "^5.3.2",
+    "release-it": "^19.0.0",
     "tslib": "^2.8.1",
     "tsup": "^8.5.0",
+    "typedoc": "^0.28.0",
+    "typedoc-plugin-markdown": "^4.9.0",
     "typescript-eslint": "^8.37.0"
   },
   "peerDependencies": {
@@ -41,10 +50,17 @@
     "./ts/base": "./ts/tsconfig.base.json",
     "./ts/spec": "./ts/tsconfig.spec.json",
     "./mocha": "./src/mocha/.mocharc.ts",
-    "./nyc": "./src/nyc/nyc.config.ts",
+    "./c8": "./src/c8/c8.config.ts",
     "./tsup": "./src/tsup/tsup.config.ts",
     "./pkg": "./src/pkg/pkg.config.ts",
     "./eslint": "./src/eslint/eslint.config.ts",
-    "./prettier": "./src/prettier/prettier.config.ts"
+    "./prettier": "./src/prettier/prettier.config.ts",
+    "./release-it": "./src/release-it/release-it.config.ts",
+    "./commitlint": "./src/commitlint/commitlint.config.ts",
+    "./lefthook": "./src/lefthook/lefthook.config.ts",
+    "./knip": "./src/knip/knip.config.ts",
+    "./typedoc": "./src/typedoc/typedoc.config.ts",
+    "./devtools": "./src/devtools/devtools.config.ts",
+    "./testing": "./src/testing/ink-helpers.ts"
   }
 }

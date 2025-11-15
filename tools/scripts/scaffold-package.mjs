@@ -82,6 +82,8 @@ function scaffoldPackage(options) {
 			"build:binary": "nx pkg",
 			test: "nx test",
 			"test:coverage": "nx coverage",
+			docs: "nx docs",
+			release: "nx release",
 			lint: "nx lint",
 			typecheck: "nx typecheck",
 		},
@@ -91,14 +93,20 @@ function scaffoldPackage(options) {
 			"@types/chai": "^4.3.20",
 			"@types/mocha": "^10.0.10",
 			"@types/node": "^18.19.120",
+			"@types/react": "^18.3.0",
+			"@yao-pkg/pkg": "^6.0.0",
+			"c8": "^10.1.2",
 			"chai": "^4.5.0",
+			"ink-testing-library": "^4.0.0",
 			"mocha": "^10.8.2",
-			"nyc": "^17.1.0",
-			"pkg": "^5.8.1",
-			"source-map-support": "^0.5.21",
+			"react": "^18.3.1",
+			"react-devtools-core": "^5.3.2",
+			"release-it": "^19.0.0",
 			"ts-mocha": "^10.0.0",
 			"ts-node": "^10.9.2",
 			"tsup": "^8.5.0",
+			"typedoc": "^0.28.0",
+			"typedoc-plugin-markdown": "^4.9.0",
 		},
 		publishConfig: {
 			access: "public",
@@ -159,9 +167,25 @@ function scaffoldPackage(options) {
 			executor: "nx:run-commands",
 			outputs: [`${options.directory}/${name}/coverage`],
 			options: {
-				command: `pnpm --filter @${scope}/${name} exec nyc --nycrc-path .nycrc.json ts-mocha --config .mocharc.json`,
+				command: `pnpm --filter @${scope}/${name} exec c8 --config .c8rc.json ts-mocha --config .mocharc.json`,
 			},
 		}
+	}
+
+	// Add TypeDoc documentation target
+	projectJson.targets.docs = {
+		executor: "nx:run-commands",
+		options: {
+			command: `pnpm --filter @${scope}/${name} exec typedoc --options typedoc.json`,
+		},
+	}
+
+	// Add release-it target
+	projectJson.targets.release = {
+		executor: "nx:run-commands",
+		options: {
+			command: `pnpm --filter @${scope}/${name} exec release-it`,
+		},
 	}
 
 	// Add pkg target for binary building
@@ -370,6 +394,88 @@ export default defineConfig({
 		JSON.stringify(pkgConfigJson, null, 2),
 	)
 
+	// Create typedoc.json for API documentation
+	const typedocConfig = {
+		entryPoints: ["src/index.ts"],
+		out: "../../docs/content/docs/api/" + name,
+		plugin: ["typedoc-plugin-markdown"],
+		readme: "README.md",
+		includeVersion: true,
+		categorizeByGroup: true,
+		defaultCategory: "Other",
+		categoryOrder: [
+			"Classes",
+			"Interfaces",
+			"Type Aliases",
+			"Functions",
+			"Variables",
+			"*",
+		],
+		sort: ["source-order", "required-first", "kind"],
+		exclude: [
+			"**/*.spec.ts",
+			"**/*.test.ts",
+			"**/*.test.tsx",
+			"**/node_modules/**",
+			"**/dist/**",
+		],
+		excludePrivate: true,
+		excludeProtected: false,
+		excludeInternal: true,
+		hideGenerator: true,
+		cleanOutputDir: true,
+		gitRevision: "main",
+		basePath: ".",
+		excludeExternals: true,
+		excludeNotDocumented: false,
+	}
+
+	fs.writeFileSync(
+		path.join(projectRoot, "typedoc.json"),
+		JSON.stringify(typedocConfig, null, 2),
+	)
+
+	// Create .release-it.json for release management
+	const releaseItConfig = {
+		git: {
+			commit: true,
+			tag: true,
+			push: true,
+			commitMessage: `release: ${projectName}@\${version}`,
+			tagName: `${projectName}@\${version}`,
+			requireCleanWorkingDir: false,
+			requireUpstream: true,
+			addUntrackedFiles: false,
+		},
+		npm: {
+			publish: true,
+			publishPath: ".",
+			skipChecks: false,
+			ignoreVersion: false,
+		},
+		github: {
+			release: false,
+		},
+		plugins: {
+			"@release-it/conventional-changelog": {
+				preset: {
+					name: "conventionalcommits",
+				},
+				infile: "CHANGELOG.md",
+				header: "# Changelog",
+			},
+		},
+		hooks: {
+			"before:init": ["pnpm run build", "pnpm run test"],
+			"after:bump": "echo Successfully bumped version to ${version}",
+		},
+	}
+
+	fs.writeFileSync(
+		path.join(projectRoot, ".release-it.json"),
+		JSON.stringify(releaseItConfig, null, 2),
+	)
+
 	if (options.addTests) {
 		// Create .mocharc.json with embedded configuration
 		const mochaConfig = {
@@ -391,34 +497,39 @@ export default defineConfig({
 			JSON.stringify(mochaConfig, null, 2),
 		)
 
-		// Create .nycrc.json for code coverage
-		const nycConfig = {
+		// Create .c8rc.json for code coverage
+		const c8Config = {
 			all: true,
 			"check-coverage": true,
 			lines: 90,
 			functions: 90,
 			branches: 90,
 			statements: 90,
-			include: ["src/**/*.ts"],
+			include: ["src/**/*.ts", "src/**/*.tsx"],
 			exclude: [
 				"**/*.spec.ts",
 				"**/*.test.ts",
+				"**/*.test.tsx",
+				"**/*.d.ts",
 				"**/node_modules/**",
 				"**/dist/**",
 				"**/coverage/**",
+				"**/*.config.ts",
+				"**/*.config.js",
 			],
-			extension: [".ts"],
-			reporter: ["text", "lcov", "html"],
+			extension: [".ts", ".tsx"],
+			reporter: ["text", "lcov", "html", "json-summary"],
 			"report-dir": "./coverage",
-			"temp-dir": "./.nyc_output",
-			require: ["ts-node/register"],
-			sourceMap: true,
-			instrument: true,
+			"temp-directory": "./.c8",
+			clean: true,
+			"skip-full": false,
+			src: ["src"],
+			"exclude-after-remap": true,
 		}
 
 		fs.writeFileSync(
-			path.join(projectRoot, ".nycrc.json"),
-			JSON.stringify(nycConfig, null, 2),
+			path.join(projectRoot, ".c8rc.json"),
+			JSON.stringify(c8Config, null, 2),
 		)
 
 		// Create src/index.spec.ts
