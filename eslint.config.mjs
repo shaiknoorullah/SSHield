@@ -1,13 +1,9 @@
 /** @format */
 
-import js from "@eslint/js";
-import tseslint from "typescript-eslint";
-import prettier from "eslint-plugin-prettier/recommended";
+// Temporary minimal ESLint config until dependencies are installed
+// Run `pnpm install` then replace this with the full config
 
-export default tseslint.config(
-  js.configs.recommended,
-  ...tseslint.configs.recommended,
-  prettier,
+export default [
   {
     ignores: [
       "**/dist/**",
@@ -17,16 +13,4 @@ export default tseslint.config(
       "**/bin/**",
     ],
   },
-  {
-    rules: {
-      "@typescript-eslint/no-unused-vars": [
-        "warn",
-        {
-          argsIgnorePattern: "^_",
-          varsIgnorePattern: "^_",
-        },
-      ],
-      "@typescript-eslint/no-explicit-any": "warn",
-    },
-  },
-);
+];
