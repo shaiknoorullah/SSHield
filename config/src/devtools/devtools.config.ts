@@ -5,29 +5,29 @@
  * Enables debugging of Ink components with React DevTools
  */
 interface DevToolsConfig {
-	enabled?: boolean
-	host?: string
-	port?: number
-	useHttps?: boolean
-	websocket?: boolean
+  enabled?: boolean;
+  host?: string;
+  port?: number;
+  useHttps?: boolean;
+  websocket?: boolean;
 }
 
 const devtoolsConfig: DevToolsConfig = {
-	// Enable DevTools by default in development
-	enabled: process.env["NODE_ENV"] !== "production",
+  // Enable DevTools by default in development
+  enabled: process.env["NODE_ENV"] !== "production",
 
-	// DevTools server host
-	host: "localhost",
+  // DevTools server host
+  host: "localhost",
 
-	// DevTools server port
-	port: 8097,
+  // DevTools server port
+  port: 8097,
 
-	// Use HTTPS
-	useHttps: false,
+  // Use HTTPS
+  useHttps: false,
 
-	// Use WebSocket connection
-	websocket: true,
-}
+  // Use WebSocket connection
+  websocket: true,
+};
 
 /**
  * Initialize React DevTools for Ink
@@ -40,33 +40,33 @@ const devtoolsConfig: DevToolsConfig = {
  * }
  */
 export async function initDevTools(
-	config: Partial<DevToolsConfig> = {},
+  config: Partial<DevToolsConfig> = {},
 ): Promise<void> {
-	const finalConfig = { ...devtoolsConfig, ...config }
+  const finalConfig = { ...devtoolsConfig, ...config };
 
-	if (!finalConfig.enabled) {
-		return
-	}
+  if (!finalConfig.enabled) {
+    return;
+  }
 
-	try {
-		// Dynamic import to avoid bundling in production
-		// @ts-ignore - react-devtools-core doesn't have types
-		const { default: DevTools } = await import("react-devtools-core")
+  try {
+    // Dynamic import to avoid bundling in production
+    // @ts-ignore - react-devtools-core doesn't have types
+    const { default: DevTools } = await import("react-devtools-core");
 
-		DevTools.connectToDevTools({
-			host: finalConfig.host,
-			port: finalConfig.port,
-			useHttps: finalConfig.useHttps,
-			websocket: finalConfig.websocket,
-		})
+    DevTools.connectToDevTools({
+      host: finalConfig.host,
+      port: finalConfig.port,
+      useHttps: finalConfig.useHttps,
+      websocket: finalConfig.websocket,
+    });
 
-		console.log(
-			`React DevTools connected on ${finalConfig.host}:${finalConfig.port}`,
-		)
-	} catch (error) {
-		console.warn("Failed to initialize React DevTools:", error)
-	}
+    console.log(
+      `React DevTools connected on ${finalConfig.host}:${finalConfig.port}`,
+    );
+  } catch (error) {
+    console.warn("Failed to initialize React DevTools:", error);
+  }
 }
 
-export default devtoolsConfig
-export type { DevToolsConfig }
+export default devtoolsConfig;
+export type { DevToolsConfig };
