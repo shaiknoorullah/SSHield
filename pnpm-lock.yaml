@@ -133,6 +133,12 @@ importers:
         specifier: ^8.37.0
         version: 8.38.0(eslint@9.32.0(jiti@2.4.2))(typescript@5.8.3)
 
+  packages/example:
+    devDependencies:
+      '@sshield/config':
+        specifier: workspace:^
+        version: link:../../config
+
 packages:
 
   '@ampproject/remapping@2.3.0':
