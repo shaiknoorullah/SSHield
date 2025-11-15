@@ -1,0 +1,13 @@
+/** @format */
+import { describe, it } from "mocha"
+import { expect } from "chai"
+import { hello } from "./index"
+
+describe("<%= projectName %>", () => {
+	describe("hello", () => {
+		it("should return a greeting message", () => {
+			const result = hello()
+			expect(result).to.equal("Hello from <%= projectName %>")
+		})
+	})
+})

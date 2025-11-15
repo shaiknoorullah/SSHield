@@ -21,6 +21,7 @@
   "license": "MIT",
   "scripts": {
     "commit": "git-cz",
+    "scaffold": "node tools/scripts/scaffold-package.mjs",
     "build": "nx run-many --target=build",
     "dev": "nx run-many --target=dev",
     "lint": "nx run-many --target=lint",

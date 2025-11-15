@@ -1,0 +1,35 @@
+{
+  "name": "<%= projectName %>",
+  "$schema": "<%= offsetFromRoot %>node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "<%= projectRoot %>/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "cache": true,
+      "options": {
+        "outputPath": "<%= projectRoot %>/dist",
+        "main": "<%= projectRoot %>/src/index.ts",
+        "tsConfig": "<%= projectRoot %>/tsconfig.lib.json",
+        "assets": ["*.md"],
+        "clean": true
+      }
+    }<% if (addTests) { %>,
+    "test": {
+      "executor": "@nx/js:node",
+      "outputs": [],
+      "options": {
+        "command": "mocha --config <%= projectRoot %>/.mocharc.json '<%= projectRoot %>/src/**/*.spec.ts'"
+      }
+    }<% } %>,
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["<%= projectRoot %>/**/*.ts"]
+      }
+    }
+  }
+}
