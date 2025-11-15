@@ -34,7 +34,7 @@
       ]
     }
   },
-  "defaultBase": "main",
+  "defaultBase": "feat-monorepo-init",
   "namedInputs": {
     "production": [
       "default",
