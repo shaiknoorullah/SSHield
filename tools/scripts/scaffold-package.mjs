@@ -57,7 +57,8 @@ function toKebabCase(str) {
 
 function scaffoldPackage(options) {
 	const name = toKebabCase(options.name)
-	const projectName = `@sshield/${name}`
+	const scope = "sshield"
+	const projectName = `@${scope}/${name}`
 	const projectRoot = path.join(process.cwd(), options.directory, name)
 
 	console.log(`\nScaffolding ${projectName}...`)
@@ -95,6 +96,7 @@ function scaffoldPackage(options) {
 			"nyc": "^17.1.0",
 			"pkg": "^5.8.1",
 			"source-map-support": "^0.5.21",
+			"ts-mocha": "^10.0.0",
 			"ts-node": "^10.9.2",
 			"tsup": "^8.5.0",
 		},
@@ -149,7 +151,7 @@ function scaffoldPackage(options) {
 			executor: "nx:run-commands",
 			outputs: [],
 			options: {
-				command: `pnpm --filter @${scope}/${name} exec mocha --config .mocharc.json`,
+				command: `pnpm --filter @${scope}/${name} exec ts-mocha --config .mocharc.json`,
 			},
 		}
 
@@ -157,7 +159,7 @@ function scaffoldPackage(options) {
 			executor: "nx:run-commands",
 			outputs: [`${options.directory}/${name}/coverage`],
 			options: {
-				command: `pnpm --filter @${scope}/${name} exec nyc --nycrc-path .nycrc.json mocha --config .mocharc.json`,
+				command: `pnpm --filter @${scope}/${name} exec nyc --nycrc-path .nycrc.json ts-mocha --config .mocharc.json`,
 			},
 		}
 	}
@@ -371,7 +373,6 @@ export default defineConfig({
 	if (options.addTests) {
 		// Create .mocharc.json with embedded configuration
 		const mochaConfig = {
-			require: ["ts-node/register"],
 			extensions: ["ts"],
 			spec: ["src/**/*.spec.ts", "src/**/*.test.ts"],
 			recursive: true,
@@ -379,11 +380,6 @@ export default defineConfig({
 			reporter: "spec",
 			color: true,
 			exit: true,
-			"ts-node": {
-				project: "tsconfig.spec.json",
-				transpileOnly: true,
-				files: true,
-			},
 			watchFiles: ["src/**/*.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
 			bail: false,
 			fullTrace: false,
