@@ -26,6 +26,8 @@ const commitlintConfig: UserConfig = {
         "build", // Changes to build system or dependencies
         "ci", // Changes to CI configuration
         "chore", // Other changes that don't modify src or test files
+        "maintenance", // Maintenance tasks
+        "init", // Initialize a new plugin or package
         "revert", // Reverts a previous commit
         "release", // Release commits
       ],
@@ -152,6 +154,16 @@ const commitlintConfig: UserConfig = {
             description: "Other changes that don't modify src or test files",
             title: "Chores",
             emoji: "♻️",
+          },
+          maintenance: {
+            description: "Maintenance tasks that do not modify src or test files",
+            title: "Maintenance",
+            emoji: "🔧",
+          },
+          init: {
+            description: "Initialize a new plugin or package",
+            title: "Initialization",
+            emoji: "🎉",
           },
           revert: {
             description: "Reverts a previous commit",
