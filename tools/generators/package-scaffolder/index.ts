@@ -2,7 +2,6 @@
 import {
 	formatFiles,
 	generateFiles,
-	getWorkspaceLayout,
 	names,
 	offsetFromRoot,
 	Tree,
@@ -23,12 +22,12 @@ export default async function (tree: Tree, options: PackageScaffolderSchema) {
 	await formatFiles(tree)
 }
 
-function normalizeOptions(tree: Tree, options: PackageScaffolderSchema) {
+function normalizeOptions(_tree: Tree, options: PackageScaffolderSchema) {
 	const name = names(options.name).fileName
 	const projectDirectory = options.directory || "packages"
 	const projectName = `@sshield/${name}`
 	const projectRoot = `${projectDirectory}/${name}`
-	const parsedTags = []
+	const parsedTags: string[] = []
 
 	return {
 		...options,
