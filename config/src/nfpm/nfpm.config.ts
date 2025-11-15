@@ -134,7 +134,7 @@ const nfpmConfig: NfpmConfig = {
       scripts: {
         postinstall: `#!/bin/sh
 echo "SSHield has been installed successfully!"
-echo "Run '${BINARY_NAME} --help' to get started."
+echo "Run '\${BINARY_NAME} --help' to get started."
 `,
         preremove: `#!/bin/sh
 echo "Removing SSHield..."
@@ -149,7 +149,7 @@ echo "Removing SSHield..."
       scripts: {
         postinstall: `#!/bin/sh
 echo "SSHield has been installed successfully!"
-echo "Run '${BINARY_NAME} --help' to get started."
+echo "Run '\${BINARY_NAME} --help' to get started."
 `,
         preremove: `#!/bin/sh
 echo "Removing SSHield..."
@@ -163,7 +163,7 @@ echo "Removing SSHield..."
       scripts: {
         postinstall: `#!/bin/sh
 echo "SSHield has been installed successfully!"
-echo "Run '${BINARY_NAME} --help' to get started."
+echo "Run '\${BINARY_NAME} --help' to get started."
 `,
         preremove: `#!/bin/sh
 echo "Removing SSHield..."
@@ -210,7 +210,8 @@ bindir: ${config.bindir}
 contents:
 ${config.contents
   .map(
-    (c) => `  - src: ${c.src.replace("${PACKAGE_NAME}", packageName).replace("${BINARY_NAME}", binaryName)}
+    (c: { src: string; dst: string; type?: string; file_info?: { mode?: number } }) =>
+      `  - src: ${c.src.replace("${PACKAGE_NAME}", packageName).replace("${BINARY_NAME}", binaryName)}
     dst: ${c.dst.replace("${PACKAGE_NAME}", packageName).replace("${BINARY_NAME}", binaryName)}
     type: ${c.type || "file"}
     file_info:
@@ -224,50 +225,50 @@ overrides:
       postinstall: |
 ${config.overrides?.deb?.scripts?.postinstall
   ?.split("\n")
-  .map((line) => `        ${line}`)
+  .map((line: string) => `        ${line}`)
   .join("\n")
   .replace(/\$\{BINARY_NAME\}/g, binaryName)}
       preremove: |
 ${config.overrides?.deb?.scripts?.preremove
   ?.split("\n")
-  .map((line) => `        ${line}`)
+  .map((line: string) => `        ${line}`)
   .join("\n")}
     dependencies:
-${config.overrides?.deb?.dependencies?.map((d) => `      - ${d}`).join("\n") || "      []"}
+${config.overrides?.deb?.dependencies?.map((d: string) => `      - ${d}`).join("\n") || "      []"}
     recommends:
-${config.overrides?.deb?.recommends?.map((r) => `      - ${r}`).join("\n") || "      []"}
+${config.overrides?.deb?.recommends?.map((r: string) => `      - ${r}`).join("\n") || "      []"}
 
   rpm:
     scripts:
       postinstall: |
 ${config.overrides?.rpm?.scripts?.postinstall
   ?.split("\n")
-  .map((line) => `        ${line}`)
+  .map((line: string) => `        ${line}`)
   .join("\n")
   .replace(/\$\{BINARY_NAME\}/g, binaryName)}
       preremove: |
 ${config.overrides?.rpm?.scripts?.preremove
   ?.split("\n")
-  .map((line) => `        ${line}`)
+  .map((line: string) => `        ${line}`)
   .join("\n")}
     dependencies:
-${config.overrides?.rpm?.dependencies?.map((d) => `      - ${d}`).join("\n") || "      []"}
+${config.overrides?.rpm?.dependencies?.map((d: string) => `      - ${d}`).join("\n") || "      []"}
 
   apk:
     scripts:
       postinstall: |
 ${config.overrides?.apk?.scripts?.postinstall
   ?.split("\n")
-  .map((line) => `        ${line}`)
+  .map((line: string) => `        ${line}`)
   .join("\n")
   .replace(/\$\{BINARY_NAME\}/g, binaryName)}
       preremove: |
 ${config.overrides?.apk?.scripts?.preremove
   ?.split("\n")
-  .map((line) => `        ${line}`)
+  .map((line: string) => `        ${line}`)
   .join("\n")}
     dependencies:
-${config.overrides?.apk?.dependencies?.map((d) => `      - ${d}`).join("\n") || "      []"}
+${config.overrides?.apk?.dependencies?.map((d: string) => `      - ${d}`).join("\n") || "      []"}
 `;
 
   return yaml;
