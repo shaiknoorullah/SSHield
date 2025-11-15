@@ -27,6 +27,8 @@ interface ReleaseItConfig {
     releaseName?: string;
     draft?: boolean;
     preRelease?: boolean;
+    assets?: string[];
+    releaseNotes?: string;
   };
   gitlab?: {
     release?: boolean;
@@ -59,9 +61,20 @@ const releaseItConfig: ReleaseItConfig = {
   },
 
   github: {
-    release: false, // Disable GitHub releases by default
+    release: true, // Enable GitHub releases
+    releaseName: "${name} v${version}",
     draft: false,
     preRelease: false,
+    // Assets to upload to GitHub releases
+    // Customize this per package to include binaries
+    assets: [
+      "dist/*.tar.gz",
+      "dist/*.deb",
+      "dist/*.rpm",
+      "dist/*-linux-*",
+      "dist/*-macos-*",
+      "dist/*-win-*.exe",
+    ],
   },
 
   gitlab: {
@@ -83,6 +96,8 @@ const releaseItConfig: ReleaseItConfig = {
           { type: "test", section: "Tests" },
           { type: "build", section: "Build System" },
           { type: "ci", section: "CI" },
+          { type: "maintenance", section: "Maintenance" },
+          { type: "init", section: "Initialization" },
           { type: "chore", hidden: true },
         ],
       },
@@ -96,9 +111,18 @@ const releaseItConfig: ReleaseItConfig = {
 
   hooks: {
     "before:init": ["pnpm run build", "pnpm run test"],
-    "after:bump": "echo Successfully bumped version to ${version}",
-    "after:release":
+    "after:bump": [
+      "echo Successfully bumped version to ${version}",
+      // Build binaries with pkg
+      "pnpm run bundle",
+      // Package binaries with nfpm (if available)
+      "pnpm run package || true",
+    ],
+    "after:release": [
       "echo Successfully released ${name}@${version} to ${repo.repository}",
+      // Clean up build artifacts
+      "rimraf dist/*.tar.gz dist/*.deb dist/*.rpm",
+    ],
   },
 };
 

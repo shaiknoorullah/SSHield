@@ -61,6 +61,8 @@
     "./knip": "./src/knip/knip.config.ts",
     "./typedoc": "./src/typedoc/typedoc.config.ts",
     "./devtools": "./src/devtools/devtools.config.ts",
-    "./testing": "./src/testing/ink-helpers.ts"
+    "./testing": "./src/testing/ink-helpers.ts",
+    "./nfpm": "./src/nfpm/nfpm.config.ts",
+    "./aur": "./src/aur/pkgbuild.config.ts"
   }
 }
