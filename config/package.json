@@ -39,6 +39,12 @@
   "exports": {
     "./ts/lib": "./ts/tsconfig.lib.json",
     "./ts/base": "./ts/tsconfig.base.json",
-    "./ts/spec": "./ts/tsconfig.spec.json"
+    "./ts/spec": "./ts/tsconfig.spec.json",
+    "./mocha": "./src/mocha/.mocharc.ts",
+    "./nyc": "./src/nyc/nyc.config.ts",
+    "./tsup": "./src/tsup/tsup.config.ts",
+    "./pkg": "./src/pkg/pkg.config.ts",
+    "./eslint": "./src/eslint/eslint.config.ts",
+    "./prettier": "./src/prettier/prettier.config.ts"
   }
 }

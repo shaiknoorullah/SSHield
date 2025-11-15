@@ -77,13 +77,26 @@ function scaffoldPackage(options) {
 		types: "dist/index.d.ts",
 		scripts: {
 			build: "nx build",
+			"build:bundle": "nx bundle",
+			"build:binary": "nx pkg",
 			test: "nx test",
+			"test:coverage": "nx coverage",
 			lint: "nx lint",
 			typecheck: "nx typecheck",
 		},
 		dependencies: {},
 		devDependencies: {
 			"@sshield/config": "workspace:^",
+			"@types/chai": "^4.3.20",
+			"@types/mocha": "^10.0.10",
+			"@types/node": "^18.19.120",
+			"chai": "^4.5.0",
+			"mocha": "^10.8.2",
+			"nyc": "^17.1.0",
+			"pkg": "^5.8.1",
+			"source-map-support": "^0.5.21",
+			"ts-node": "^10.9.2",
+			"tsup": "^8.5.0",
 		},
 		publishConfig: {
 			access: "public",
@@ -115,6 +128,12 @@ function scaffoldPackage(options) {
 					clean: true,
 				},
 			},
+			bundle: {
+				executor: "nx:run-commands",
+				options: {
+					command: `pnpm --filter @${scope}/${name} exec tsup --config tsup.config.ts`,
+				},
+			},
 			lint: {
 				executor: "@nx/eslint:lint",
 				outputs: ["{options.outputFile}"],
@@ -127,12 +146,30 @@ function scaffoldPackage(options) {
 
 	if (options.addTests) {
 		projectJson.targets.test = {
-			executor: "@nx/js:node",
+			executor: "nx:run-commands",
 			outputs: [],
 			options: {
-				command: `mocha --config ${options.directory}/${name}/.mocharc.json '${options.directory}/${name}/src/**/*.spec.ts'`,
+				command: `pnpm --filter @${scope}/${name} exec mocha --config .mocharc.json`,
 			},
 		}
+
+		projectJson.targets.coverage = {
+			executor: "nx:run-commands",
+			outputs: [`${options.directory}/${name}/coverage`],
+			options: {
+				command: `pnpm --filter @${scope}/${name} exec nyc --nycrc-path .nycrc.json mocha --config .mocharc.json`,
+			},
+		}
+	}
+
+	// Add pkg target for binary building
+	projectJson.targets.pkg = {
+		executor: "nx:run-commands",
+		dependsOn: ["build"],
+		outputs: [`${options.directory}/${name}/bin`],
+		options: {
+			command: `pnpm --filter @${scope}/${name} exec pkg dist/index.js --config pkg.config.json --output bin/${name}`,
+		},
 	}
 
 	fs.writeFileSync(
@@ -170,6 +207,23 @@ function scaffoldPackage(options) {
 	fs.writeFileSync(
 		path.join(projectRoot, "tsconfig.lib.json"),
 		JSON.stringify(tsconfigLibJson, null, 2),
+	)
+
+	// Create tsconfig.spec.json for testing
+	const tsconfigSpecJson = {
+		extends: "../../config/ts/tsconfig.spec.json",
+		compilerOptions: {
+			outDir: "./dist-spec",
+			rootDir: ".",
+			types: ["mocha", "chai", "node"],
+		},
+		include: ["src/**/*.ts"],
+		exclude: ["node_modules", "dist"],
+	}
+
+	fs.writeFileSync(
+		path.join(projectRoot, "tsconfig.spec.json"),
+		JSON.stringify(tsconfigSpecJson, null, 2),
 	)
 
 	// Create eslint.config.mjs
@@ -239,11 +293,20 @@ console.log(hello())
 ## Development
 
 \`\`\`bash
-# Build
+# Build (TypeScript compilation)
 pnpm nx build ${projectName}
+
+# Build (Bundle with tsup)
+pnpm nx bundle ${projectName}
+
+# Build binary executables
+pnpm nx pkg ${projectName}
 
 # Test
 pnpm nx test ${projectName}
+
+# Test with coverage
+pnpm nx coverage ${projectName}
 
 # Lint
 pnpm nx lint ${projectName}
@@ -252,6 +315,18 @@ pnpm nx lint ${projectName}
 pnpm nx typecheck ${projectName}
 \`\`\`
 
+## Configuration
+
+This package uses shared configurations from \`@sshield/config\`:
+
+- **TypeScript**: Base and library configs
+- **ESLint**: Linting rules
+- **Prettier**: Code formatting
+- **Mocha + Chai**: Testing framework
+- **NYC**: Code coverage
+- **TSup**: Bundling
+- **pkg**: Binary building
+
 ## License
 
 MIT
@@ -259,18 +334,95 @@ MIT
 
 	fs.writeFileSync(path.join(projectRoot, "README.md"), readme)
 
+	// Create tsup.config.ts
+	const tsupConfig = `/** @format */
+import { defineConfig } from "tsup"
+import baseTsupConfig from "@sshield/config/tsup"
+
+export default defineConfig({
+	...baseTsupConfig,
+	entry: ["src/index.ts"],
+})
+`
+
+	fs.writeFileSync(path.join(projectRoot, "tsup.config.ts"), tsupConfig)
+
+	// Create pkg.config.json
+	const pkgConfigJson = {
+		scripts: ["dist/**/*.js"],
+		assets: ["package.json", "dist/**/*.json", "dist/**/*.md"],
+		targets: [
+			"node18-linux-x64",
+			"node18-linux-arm64",
+			"node18-macos-x64",
+			"node18-macos-arm64",
+			"node18-win-x64",
+			"node18-win-arm64",
+		],
+		outputPath: "bin",
+		compress: "Brotli",
+	}
+
+	fs.writeFileSync(
+		path.join(projectRoot, "pkg.config.json"),
+		JSON.stringify(pkgConfigJson, null, 2),
+	)
+
 	if (options.addTests) {
-		// Create .mocharc.json
+		// Create .mocharc.json with embedded configuration
 		const mochaConfig = {
-			extension: ["ts"],
-			spec: "src/**/*.spec.ts",
 			require: ["ts-node/register"],
-			"node-option": ["loader=ts-node/esm"],
+			extensions: ["ts"],
+			spec: ["src/**/*.spec.ts", "src/**/*.test.ts"],
+			recursive: true,
+			timeout: 5000,
+			reporter: "spec",
+			color: true,
+			exit: true,
+			"ts-node": {
+				project: "tsconfig.spec.json",
+				transpileOnly: true,
+				files: true,
+			},
+			watchFiles: ["src/**/*.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
+			bail: false,
+			fullTrace: false,
+			checkLeaks: false,
 		}
 
 		fs.writeFileSync(
 			path.join(projectRoot, ".mocharc.json"),
 			JSON.stringify(mochaConfig, null, 2),
+		)
+
+		// Create .nycrc.json for code coverage
+		const nycConfig = {
+			all: true,
+			"check-coverage": true,
+			lines: 90,
+			functions: 90,
+			branches: 90,
+			statements: 90,
+			include: ["src/**/*.ts"],
+			exclude: [
+				"**/*.spec.ts",
+				"**/*.test.ts",
+				"**/node_modules/**",
+				"**/dist/**",
+				"**/coverage/**",
+			],
+			extension: [".ts"],
+			reporter: ["text", "lcov", "html"],
+			"report-dir": "./coverage",
+			"temp-dir": "./.nyc_output",
+			require: ["ts-node/register"],
+			sourceMap: true,
+			instrument: true,
+		}
+
+		fs.writeFileSync(
+			path.join(projectRoot, ".nycrc.json"),
+			JSON.stringify(nycConfig, null, 2),
 		)
 
 		// Create src/index.spec.ts
