@@ -2,14 +2,19 @@
 
 import { defineConfig } from "cz-git"
 import { readdirSync } from "node:fs"
-import { resolve } from "node:path"
+import { resolve, dirname } from "node:path"
+import { fileURLToPath } from "node:url"
 import _ from "lodash"
 
 /**
- * cz.config.ts
+ * cz.config.mjs
  * This file configures the commitizen prompt for generating commit messages.
  * It defines the structure and options available to users when making commits.
  */
+
+// Get __dirname equivalent in ES modules
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const scopes = _.union(
 	readdirSync(resolve(__dirname, "packages")),
