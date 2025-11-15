@@ -1,73 +1,75 @@
 {
-  "name": "sshield",
-  "version": "1.0.0",
-  "description": "The ultimate SSH security and management toolkit",
-  "main": "dist/index.js",
-  "bin": {
-    "sshield": "dist/index.js"
-  },
-  "packageManager": "pnpm@10.10.0",
-  "keywords": [
-    "ssh",
-    "security",
-    "key-management",
-    "cli",
-    "terminal"
-  ],
-  "author": "shaik noorullah <shaiknooru247@gmail.com>",
-  "contributors": [
-    "Prathik Shetty <https://github.com/shettydev>"
-  ],
-  "license": "MIT",
-  "scripts": {
-    "prepare": "lefthook install",
-    "commit": "git-cz",
-    "scaffold": "node tools/scripts/scaffold-package.mjs",
-    "build": "nx run-many --target=build",
-    "dev": "nx run-many --target=dev",
-    "lint": "nx run-many --target=lint",
-    "test": "nx run-many --target=test",
-    "docs": "nx run-many --target=docs",
-    "knip": "knip",
-    "knip:fix": "knip --fix",
-    "clean": "nx reset && rimraf dist coverage .c8 .nyc_output"
-  },
-  "devDependencies": {
-    "@commitlint/cli": "^19.6.1",
-    "@commitlint/config-conventional": "^19.6.0",
-    "@nx/conformance": "^3.0.0",
-    "@nx/eslint": "^21.3.7",
-    "@nx/js": "^21.3.7",
-    "@nx/plugin": "^21.3.7",
-    "@nx/rollup": "^21.3.7",
-    "@nx/workspace": "^21.3.7",
-    "@sshield/config": "workspace:^",
-    "@types/lodash": "^4.17.20",
-    "@types/node": "^18.19.120",
-    "@typescript-eslint/eslint-plugin": "^8.38.0",
-    "@typescript-eslint/parser": "^8.38.0",
-    "commitizen": "^4.3.1",
-    "cz-conventional-commit": "1.0.6",
-    "cz-git": "^1.12.0",
-    "eslint": "^9.31.0",
-    "eslint-config-prettier": "^10.0.0",
-    "eslint-plugin-import": "^2.32.0",
-    "eslint-plugin-prettier": "^5.5.1",
-    "knip": "^5.38.0",
-    "lefthook": "^1.10.0",
-    "lodash": "^4.17.21",
-    "nx": "^21.3.7",
-    "prettier": "^3.0.0",
-    "rimraf": "^6.0.1",
-    "typescript": "^5.8.3"
-  },
-  "engines": {
-    "node": ">=22.11.0",
-    "pnpm": ">=10.10.0"
-  },
-  "config": {
-    "commitizen": {
-      "path": "node_modules/cz-git"
-    }
-  }
+	"name": "sshield",
+	"version": "1.0.0",
+	"description": "The ultimate SSH security and management toolkit",
+	"main": "dist/index.js",
+	"bin": {
+		"sshield": "dist/index.js"
+	},
+	"packageManager": "pnpm@10.10.0",
+	"keywords": [
+		"ssh",
+		"security",
+		"key-management",
+		"cli",
+		"terminal"
+	],
+	"author": "shaik noorullah <shaiknooru247@gmail.com>",
+	"contributors": [
+		"Prathik Shetty <https://github.com/shettydev>"
+	],
+	"license": "MIT",
+	"scripts": {
+		"prepare": "lefthook install",
+		"commit": "git-cz",
+		"scaffold": "node tools/scripts/scaffold-package.mjs",
+		"build": "nx run-many --target=build",
+		"dev": "nx run-many --target=dev",
+		"lint": "nx run-many --target=lint",
+		"test": "nx run-many --target=test",
+		"docs": "nx run-many --target=docs",
+		"knip": "knip",
+		"knip:fix": "knip --fix",
+		"clean": "nx reset && rimraf dist coverage .c8 .nyc_output"
+	},
+	"devDependencies": {
+		"@commitlint/cli": "^19.6.1",
+		"@commitlint/config-conventional": "^19.6.0",
+		"@nx/conformance": "^3.0.0",
+		"@nx/devkit": "^22.0.3",
+		"@nx/eslint": "^21.3.7",
+		"@nx/js": "^21.3.7",
+		"@nx/plugin": "^21.3.7",
+		"@nx/rollup": "^21.3.7",
+		"@nx/workspace": "^21.3.7",
+		"@sshield/config": "workspace:^",
+		"@types/lodash": "^4.17.20",
+		"@types/node": "^18.19.120",
+		"@typescript-eslint/eslint-plugin": "^8.38.0",
+		"@typescript-eslint/parser": "^8.38.0",
+		"commitizen": "^4.3.1",
+		"cz-conventional-commit": "1.0.6",
+		"cz-git": "^1.12.0",
+		"eslint": "^9.31.0",
+		"eslint-config-prettier": "^10.0.0",
+		"eslint-plugin-import": "^2.32.0",
+		"eslint-plugin-prettier": "^5.5.1",
+		"knip": "^5.38.0",
+		"lefthook": "^1.10.0",
+		"lodash": "^4.17.21",
+		"nx": "^21.3.7",
+		"prettier": "^3.0.0",
+		"rimraf": "^6.0.1",
+		"tslib": "^2.8.1",
+		"typescript": "^5.8.3"
+	},
+	"engines": {
+		"node": ">=22.11.0",
+		"pnpm": ">=10.10.0"
+	},
+	"config": {
+		"commitizen": {
+			"path": "node_modules/cz-git"
+		}
+	}
 }
