@@ -1,7 +1,7 @@
 /** @format */
 
 import { defineConfig } from "cz-git"
-import { readdirSync } from "node:fs"
+import { readdirSync, existsSync } from "node:fs"
 import { resolve, dirname } from "node:path"
 import { fileURLToPath } from "node:url"
 import _ from "lodash"
@@ -16,13 +16,22 @@ import _ from "lodash"
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
+// Safely read directory, return empty array if directory doesn't exist
+const readDirSafe = (path) => {
+	try {
+		return existsSync(path) ? readdirSync(path) : []
+	} catch {
+		return []
+	}
+}
+
 const scopes = _.union(
-	readdirSync(resolve(__dirname, "packages")),
-	readdirSync(resolve(__dirname, "plugins")),
-	readdirSync(resolve(__dirname, "tests")),
-	readdirSync(resolve(__dirname, "config")),
-	readdirSync(resolve(__dirname, "docs")),
-	readdirSync(resolve(__dirname, "tools"))
+	readDirSafe(resolve(__dirname, "packages")),
+	readDirSafe(resolve(__dirname, "plugins")),
+	readDirSafe(resolve(__dirname, "tests")),
+	readDirSafe(resolve(__dirname, "config")),
+	readDirSafe(resolve(__dirname, "docs")),
+	readDirSafe(resolve(__dirname, "tools"))
 )
 
 const czConfig = {
