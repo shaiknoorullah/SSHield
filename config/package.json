@@ -13,7 +13,7 @@
     "@types/eslint-plugin-jsx-a11y": "^6.10.0",
     "@types/mocha": "^10.0.10",
     "@types/node": "^18.16.9",
-    "@typescript-eslint/parser": "^7.18.0",
+    "@typescript-eslint/parser": "^8.38.0",
     "@typescript-eslint/utils": "^8.38.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
@@ -26,8 +26,8 @@
     "typescript-eslint": "^8.37.0"
   },
   "peerDependencies": {
-    "@typescript-eslint/eslint-plugin": "^7.18.0",
-    "@typescript-eslint/parser": "^7.18.0",
+    "@typescript-eslint/eslint-plugin": "^8.0.0",
+    "@typescript-eslint/parser": "^8.0.0",
     "eslint": "^9.31.0",
     "eslint-config-prettier": "^10.0.0",
     "eslint-plugin-import": "^2.32.0",
@@ -37,8 +37,8 @@
     "typescript": "^5.0.0"
   },
   "exports": {
-    "./ts/lib": "./dist/typescript/tsconfig.lib.json",
-    "./ts/base": "./dist/typescript/tsconfig.base.json",
-    "./ts/spec": "./dist/typescript/tsconfig.spec.json"
+    "./ts/lib": "./ts/tsconfig.lib.json",
+    "./ts/base": "./ts/tsconfig.base.json",
+    "./ts/spec": "./ts/tsconfig.spec.json"
   }
 }
