@@ -3,6 +3,7 @@
 		"target": "es2015",
 		"module": "commonjs",
 		"lib": ["ES2020"],
+		"baseUrl": ".",
 		"moduleResolution": "node",
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,

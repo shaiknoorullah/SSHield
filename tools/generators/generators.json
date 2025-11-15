@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "name": "@sshield/workspace-generators",
+  "version": "1.0.0",
+  "generators": {
+    "package": {
+      "factory": "./package-scaffolder/index",
+      "schema": "./package-scaffolder/schema.json",
+      "description": "Scaffold a new SSHield package with @sshield/config integration"
+    }
+  }
+}

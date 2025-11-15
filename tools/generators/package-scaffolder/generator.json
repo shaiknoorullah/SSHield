@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "cli": "nx",
+  "id": "package-scaffolder",
+  "description": "Scaffold a new SSHield package with configuration",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Package name (without @sshield prefix)",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What is the package name?"
+    },
+    "description": {
+      "type": "string",
+      "description": "Package description",
+      "x-prompt": "What is the package description?"
+    },
+    "directory": {
+      "type": "string",
+      "description": "Directory where the package should be created",
+      "default": "packages",
+      "enum": ["packages", "plugins"]
+    },
+    "bundler": {
+      "type": "string",
+      "description": "Build bundler to use",
+      "default": "rollup",
+      "enum": ["rollup", "tsup", "tsc"]
+    },
+    "addTests": {
+      "type": "boolean",
+      "description": "Add test setup with Mocha",
+      "default": true
+    }
+  },
+  "required": ["name"]
+}
