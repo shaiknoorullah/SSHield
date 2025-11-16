@@ -77,25 +77,34 @@
     "nfpm:deb": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
-      "outputs": ["{projectRoot}/dist-packages"],
+      "outputs": ["{projectRoot}/*.deb"],
       "options": {
-        "command": "nfpm package --packager deb --target dist-packages/",
+        "command": "nfpm package --packager deb --config nfpm.yaml",
         "cwd": "packages/example-cli"
       }
     },
     "nfpm:rpm": {
       "executor": "nx:run-commands",
       "dependsOn": ["build"],
-      "outputs": ["{projectRoot}/dist-packages"],
+      "outputs": ["{projectRoot}/*.rpm"],
       "options": {
-        "command": "nfpm package --packager rpm --target dist-packages/",
+        "command": "nfpm package --packager rpm --config nfpm.yaml",
+        "cwd": "packages/example-cli"
+      }
+    },
+    "nfpm:apk": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "outputs": ["{projectRoot}/*.apk"],
+      "options": {
+        "command": "nfpm package --packager apk --config nfpm.yaml",
         "cwd": "packages/example-cli"
       }
     },
     "nfpm:all": {
       "executor": "nx:run-commands",
-      "dependsOn": ["nfpm:deb", "nfpm:rpm"],
-      "outputs": ["{projectRoot}/dist-packages"]
+      "dependsOn": ["nfpm:deb", "nfpm:rpm", "nfpm:apk"],
+      "outputs": ["{projectRoot}/*.deb", "{projectRoot}/*.rpm", "{projectRoot}/*.apk"]
     },
     "package": {
       "executor": "nx:run-commands",
