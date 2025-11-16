@@ -1,0 +1,3 @@
+{
+  "extends": "@sshield/config/prettier"
+}

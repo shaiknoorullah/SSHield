@@ -1,0 +1,15 @@
+{
+  "extends": "../../config/ts/tsconfig.lib.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "declaration": true,
+    "jsx": "react",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "resolveJsonModule": true,
+    "types": ["node", "mocha", "chai"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "package.json"],
+  "exclude": ["node_modules", "dist"]
+}

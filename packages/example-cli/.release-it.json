@@ -1,0 +1,34 @@
+{
+  "git": {
+    "commit": true,
+    "tag": true,
+    "push": true,
+    "commitMessage": "release: @sshield/example-cli@${version}",
+    "tagName": "@sshield/example-cli@${version}",
+    "requireCleanWorkingDir": false,
+    "requireUpstream": true,
+    "addUntrackedFiles": false
+  },
+  "npm": {
+    "publish": true,
+    "publishPath": ".",
+    "skipChecks": false,
+    "ignoreVersion": false
+  },
+  "github": {
+    "release": false
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "preset": {
+        "name": "conventionalcommits"
+      },
+      "infile": "CHANGELOG.md",
+      "header": "# Changelog"
+    }
+  },
+  "hooks": {
+    "before:init": ["pnpm run build", "pnpm run test"],
+    "after:bump": "echo Successfully bumped version to ${version}"
+  }
+}

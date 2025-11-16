@@ -1,0 +1,28 @@
+{
+  "all": true,
+  "check-coverage": true,
+  "lines": 90,
+  "functions": 90,
+  "branches": 90,
+  "statements": 90,
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.d.ts",
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/coverage/**",
+    "**/*.config.ts",
+    "**/*.config.js"
+  ],
+  "extension": [".ts", ".tsx"],
+  "reporter": ["text", "lcov", "html", "json-summary"],
+  "report-dir": "./coverage",
+  "temp-directory": "./.c8",
+  "clean": true,
+  "skip-full": false,
+  "src": ["src"],
+  "exclude-after-remap": true
+}

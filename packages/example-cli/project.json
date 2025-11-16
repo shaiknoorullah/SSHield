@@ -1,0 +1,79 @@
+{
+  "name": "@sshield/example-cli",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/example-cli/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "cache": true,
+      "options": {
+        "outputPath": "packages/example-cli/dist",
+        "main": "packages/example-cli/src/index.ts",
+        "tsConfig": "packages/example-cli/tsconfig.lib.json",
+        "assets": ["*.md"],
+        "clean": true
+      }
+    },
+    "bundle": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm --filter @sshield/example-cli exec tsup --config tsup.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/example-cli/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "outputs": [],
+      "dependsOn": ["build"],
+      "options": {
+        "command": "pnpm --filter @sshield/example-cli exec mocha dist/src/**/*.spec.js dist/src/**/*.test.js"
+      }
+    },
+    "coverage": {
+      "executor": "nx:run-commands",
+      "outputs": ["packages/example-cli/coverage"],
+      "dependsOn": ["build"],
+      "options": {
+        "command": "pnpm --filter @sshield/example-cli exec c8 --config .c8rc.json mocha dist/src/**/*.spec.js dist/src/**/*.test.js"
+      }
+    },
+    "docs": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm --filter @sshield/example-cli exec typedoc --options typedoc.json"
+      }
+    },
+    "release": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm --filter @sshield/example-cli exec release-it"
+      }
+    },
+    "pkg": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "outputs": ["packages/example-cli/bin"],
+      "options": {
+        "command": "pnpm --filter @sshield/example-cli exec pkg dist/index.js --config pkg.config.json --output bin/example-cli"
+      }
+    },
+    "package": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["pkg"],
+      "outputs": ["packages/example-cli/dist"],
+      "options": {
+        "command": "node ../../tools/scripts/package-dist.mjs",
+        "cwd": "packages/example-cli"
+      }
+    }
+  }
+}

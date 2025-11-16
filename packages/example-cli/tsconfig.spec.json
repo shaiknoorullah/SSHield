@@ -1,0 +1,19 @@
+{
+  "extends": "../../config/ts/tsconfig.spec.json",
+  "compilerOptions": {
+    "outDir": "./dist-spec",
+    "rootDir": "./src",
+    "jsx": "react",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "resolveJsonModule": true,
+    "types": ["mocha", "chai", "node"]
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/**/*.spec.ts",
+    "src/**/*.test.tsx"
+  ],
+  "exclude": ["node_modules", "dist"]
+}
