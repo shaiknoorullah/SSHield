@@ -33,17 +33,15 @@
     "test": {
       "executor": "nx:run-commands",
       "outputs": [],
-      "dependsOn": ["build"],
       "options": {
-        "command": "pnpm --filter @sshield/example-cli exec mocha dist/src/**/*.spec.js dist/src/**/*.test.js"
+        "command": "pnpm --filter @sshield/example-cli exec ts-mocha"
       }
     },
     "coverage": {
       "executor": "nx:run-commands",
       "outputs": ["packages/example-cli/coverage"],
-      "dependsOn": ["build"],
       "options": {
-        "command": "pnpm --filter @sshield/example-cli exec c8 --config .c8rc.json mocha dist/src/**/*.spec.js dist/src/**/*.test.js"
+        "command": "pnpm --filter @sshield/example-cli exec c8 --config .c8rc.json ts-mocha"
       }
     },
     "docs": {
