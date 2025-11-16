@@ -1,6 +1,6 @@
 /** @format */
 
-import { eslintConfig } from "./src/eslint/eslint.config.ts";
+import eslintConfig from "./dist/src/eslint/eslint.config.js";
 
 export default [
   ...eslintConfig,
