@@ -28,7 +28,16 @@
       "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/example-cli/**/*.ts"]
+        "lintFilePatterns": [
+          "packages/example-cli/**/*.ts",
+          "packages/example-cli/**/*.tsx"
+        ]
+      }
+    },
+    "typecheck": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm --filter @sshield/example-cli exec tsc --noEmit --project tsconfig.spec.json"
       }
     },
     "test": {
