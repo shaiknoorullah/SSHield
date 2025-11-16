@@ -17,7 +17,7 @@ pre-commit:
 
     # Type check
     typecheck:
-      run: pnpm exec tsc --noEmit
+      run: pnpm exec nx affected --target=typecheck --parallel=3
 
     # Run affected tests
     test:

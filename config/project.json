@@ -20,6 +20,12 @@
                 ],
                 "clean": true
             }
+        },
+        "typecheck": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "pnpm --filter @sshield/config exec tsc --noEmit --project tsconfig.json"
+            }
         }
     }
 }
