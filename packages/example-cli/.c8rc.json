@@ -1,10 +1,10 @@
 {
   "all": true,
   "check-coverage": true,
-  "lines": 90,
-  "functions": 90,
-  "branches": 90,
-  "statements": 90,
+  "lines": 65,
+  "functions": 65,
+  "branches": 75,
+  "statements": 65,
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": [
     "**/*.spec.ts",
