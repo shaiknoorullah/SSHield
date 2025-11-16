@@ -14,3 +14,11 @@ coverage
 # Documentation build artifacts
 docs/.next/
 docs/.source/
+
+# Package build artifacts
+bin/
+dist-bundle/
+dist-packages/
+.c8/
+*.deb
+*.rpm

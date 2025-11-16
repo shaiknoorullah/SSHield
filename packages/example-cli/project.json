@@ -19,6 +19,7 @@
     },
     "bundle": {
       "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/dist-bundle"],
       "options": {
         "command": "pnpm --filter @sshield/example-cli exec tsup --config tsup.config.ts"
       }
@@ -39,7 +40,7 @@
     },
     "coverage": {
       "executor": "nx:run-commands",
-      "outputs": ["packages/example-cli/coverage"],
+      "outputs": ["{projectRoot}/coverage"],
       "options": {
         "command": "pnpm --filter @sshield/example-cli exec c8 --config .c8rc.json ts-mocha"
       }
@@ -58,16 +59,39 @@
     },
     "pkg": {
       "executor": "nx:run-commands",
-      "dependsOn": ["build"],
-      "outputs": ["packages/example-cli/bin"],
+      "dependsOn": ["bundle"],
+      "outputs": ["{projectRoot}/bin"],
       "options": {
-        "command": "pnpm --filter @sshield/example-cli exec pkg dist/index.js --config pkg.config.json --output bin/example-cli"
+        "command": "pnpm --filter @sshield/example-cli exec pkg dist-bundle/cli.js --config pkg.config.json --output bin/example-cli"
       }
+    },
+    "nfpm:deb": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "outputs": ["{projectRoot}/dist-packages"],
+      "options": {
+        "command": "nfpm package --packager deb --target dist-packages/",
+        "cwd": "packages/example-cli"
+      }
+    },
+    "nfpm:rpm": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "outputs": ["{projectRoot}/dist-packages"],
+      "options": {
+        "command": "nfpm package --packager rpm --target dist-packages/",
+        "cwd": "packages/example-cli"
+      }
+    },
+    "nfpm:all": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["nfpm:deb", "nfpm:rpm"],
+      "outputs": ["{projectRoot}/dist-packages"]
     },
     "package": {
       "executor": "nx:run-commands",
-      "dependsOn": ["pkg"],
-      "outputs": ["packages/example-cli/dist"],
+      "dependsOn": ["build"],
+      "outputs": ["{projectRoot}/dist-packages"],
       "options": {
         "command": "node ../../tools/scripts/package-dist.mjs",
         "cwd": "packages/example-cli"
