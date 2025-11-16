@@ -1,0 +1,13 @@
+{
+  "extensions": ["ts"],
+  "spec": ["src/**/*.spec.ts", "src/**/*.test.ts"],
+  "recursive": true,
+  "timeout": 5000,
+  "reporter": "spec",
+  "color": true,
+  "exit": true,
+  "watchFiles": ["src/**/*.ts", "src/**/*.spec.ts", "src/**/*.test.ts"],
+  "bail": false,
+  "fullTrace": false,
+  "checkLeaks": false
+}

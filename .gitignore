@@ -10,3 +10,7 @@ dist
 
 coverage
 .nyc*
+
+# Documentation build artifacts
+docs/.next/
+docs/.source/

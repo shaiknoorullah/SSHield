@@ -1,0 +1,7 @@
+{
+  "extends": "@sshield/config/ts/ui",
+  "compilerOptions": {
+    "rootDir": "."
+  },
+  "exclude": ["node_modules", "dist"]
+}

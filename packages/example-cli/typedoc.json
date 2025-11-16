@@ -1,0 +1,34 @@
+{
+  "entryPoints": ["src/index.ts"],
+  "out": "../../docs/content/docs/api/example-cli",
+  "plugin": ["typedoc-plugin-markdown"],
+  "readme": "README.md",
+  "includeVersion": true,
+  "categorizeByGroup": true,
+  "defaultCategory": "Other",
+  "categoryOrder": [
+    "Classes",
+    "Interfaces",
+    "Type Aliases",
+    "Functions",
+    "Variables",
+    "*"
+  ],
+  "sort": ["source-order", "required-first", "kind"],
+  "exclude": [
+    "**/*.spec.ts",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/node_modules/**",
+    "**/dist/**"
+  ],
+  "excludePrivate": true,
+  "excludeProtected": false,
+  "excludeInternal": true,
+  "hideGenerator": true,
+  "cleanOutputDir": true,
+  "gitRevision": "main",
+  "basePath": ".",
+  "excludeExternals": true,
+  "excludeNotDocumented": false
+}
