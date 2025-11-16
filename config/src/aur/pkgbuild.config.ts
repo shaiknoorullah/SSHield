@@ -3,6 +3,11 @@
 /**
  * PKGBUILD template generator for Arch Linux AUR
  * @see https://wiki.archlinux.org/title/PKGBUILD
+ *
+ * This module provides templates for generating PKGBUILD files for:
+ * 1. Source-based packages (compiled from source)
+ * 2. Binary packages (pre-built binaries)
+ * 3. Node.js packages (CLI tools built with Node.js)
  */
 
 interface PkgbuildConfig {
@@ -110,7 +115,9 @@ package() {
 /**
  * Generate PKGBUILD for binary distribution (pre-built binaries)
  */
-export function generateBinaryPkgbuild(config: Partial<PkgbuildConfig>): string {
+export function generateBinaryPkgbuild(
+  config: Partial<PkgbuildConfig>,
+): string {
   const {
     pkgname = "${PACKAGE_NAME}",
     pkgver = "${VERSION}",
@@ -160,6 +167,98 @@ package() {
 }
 
 /**
+ * Generate PKGBUILD for Node.js CLI packages
+ * For CLIs distributed via npm that need to be available system-wide
+ */
+export function generateNodeCliPkgbuild(
+  config: Partial<PkgbuildConfig>,
+): string {
+  const {
+    pkgname = "${PACKAGE_NAME}",
+    pkgver = "${VERSION}",
+    pkgrel = "1",
+    pkgdesc = "${DESCRIPTION}",
+    arch = ["any"], // Node.js packages are architecture-independent
+    url = "https://github.com/shaiknoorullah/sshield",
+    license = ["MIT"],
+    depends = ["nodejs"],
+    makedepends = ["npm"],
+    optdepends = [],
+    provides = [],
+    conflicts = [],
+    source = [
+      `\${pkgname}-\${pkgver}.tar.gz::https://github.com/shaiknoorullah/sshield/releases/download/v\${pkgver}/\${pkgname}-\${pkgver}.tar.gz`,
+    ],
+    sha256sums = ["SKIP"],
+    maintainer = "SSHield Team <support@sshield.dev>",
+    contributors = [],
+  } = config;
+
+  return `# Maintainer: ${maintainer}
+${contributors.map((c) => `# Contributor: ${c}`).join("\n")}${contributors.length > 0 ? "\n" : ""}
+pkgname=${pkgname}
+pkgver=${pkgver}
+pkgrel=${pkgrel}
+pkgdesc='${pkgdesc}'
+arch=(${arch.map((a) => `'${a}'`).join(" ")})
+url='${url}'
+license=(${license.map((l) => `'${l}'`).join(" ")})
+depends=(${depends.map((d) => `'${d}'`).join(" ")})
+${makedepends.length > 0 ? `makedepends=(${makedepends.map((m) => `'${m}'`).join(" ")})` : ""}
+${optdepends.length > 0 ? `optdepends=(${optdepends.map((o) => `'${o}'`).join("\n           ")})` : ""}
+${provides.length > 0 ? `provides=(${provides.map((p) => `'${p}'`).join(" ")})` : ""}
+${conflicts.length > 0 ? `conflicts=(${conflicts.map((c) => `'${c}'`).join(" ")})` : ""}
+source=(${source.map((s) => `'${s}'`).join("\n        ")})
+sha256sums=(${sha256sums.map((s) => `'${s}'`).join("\n            ")})
+
+build() {
+    cd "\${srcdir}/\${pkgname}-\${pkgver}"
+
+    # Install dependencies
+    npm install --production
+
+    # Build the package
+    npm run build
+}
+
+check() {
+    cd "\${srcdir}/\${pkgname}-\${pkgver}"
+
+    # Run tests if available
+    npm test || true
+}
+
+package() {
+    cd "\${srcdir}/\${pkgname}-\${pkgver}"
+
+    # Create installation directory
+    install -dm755 "\${pkgdir}/usr/lib/\${pkgname}"
+
+    # Copy compiled files
+    cp -r dist/* "\${pkgdir}/usr/lib/\${pkgname}/"
+    cp package.json "\${pkgdir}/usr/lib/\${pkgname}/"
+
+    # Install production dependencies
+    cd "\${pkgdir}/usr/lib/\${pkgname}"
+    npm install --production --ignore-scripts
+
+    # Create wrapper script
+    install -dm755 "\${pkgdir}/usr/bin"
+    cat > "\${pkgdir}/usr/bin/\${pkgname}" <<-EOF
+#!/bin/sh
+NODE_PATH=/usr/lib/\${pkgname}/node_modules node /usr/lib/\${pkgname}/cli.js "\\\$@"
+EOF
+    chmod 755 "\${pkgdir}/usr/bin/\${pkgname}"
+
+    # Install documentation
+    install -dm755 "\${pkgdir}/usr/share/doc/\${pkgname}"
+    install -Dm644 README.md "\${pkgdir}/usr/share/doc/\${pkgname}/README.md"
+    install -Dm644 LICENSE "\${pkgdir}/usr/share/licenses/\${pkgname}/LICENSE"
+}
+`;
+}
+
+/**
  * Generate .SRCINFO file for AUR
  * This is generated from PKGBUILD using: makepkg --printsrcinfo > .SRCINFO
  */
@@ -174,6 +273,7 @@ export function generateSrcinfo(_pkgbuild: string): string {
 const pkgbuildConfig = {
   generatePkgbuild,
   generateBinaryPkgbuild,
+  generateNodeCliPkgbuild,
   generateSrcinfo,
 };
 

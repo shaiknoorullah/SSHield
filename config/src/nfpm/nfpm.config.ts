@@ -3,6 +3,13 @@
 /**
  * nfpm configuration for creating .deb, .rpm, and .apk packages
  * @see https://nfpm.goreleaser.com/configuration/
+ *
+ * This configuration follows nfpm v2 schema.
+ * Key changes from v1:
+ * - Removed `bindir` field (doesn't exist in v2)
+ * - Scripts are at top-level, not in overrides
+ * - Dependencies use `depends` field at top-level
+ * - Format-specific fields go in deb/rpm/apk sections (not overrides)
  */
 
 interface NfpmPackage {
@@ -17,7 +24,7 @@ interface NfpmPackage {
   vendor?: string;
   homepage: string;
   license: string;
-  bindir?: string;
+  depends?: string[];
   contents?: Array<{
     src: string;
     dst: string;
@@ -26,10 +33,23 @@ interface NfpmPackage {
       mode?: number;
     };
   }>;
-  overrides?: {
-    deb?: Partial<NfpmPackage>;
-    rpm?: Partial<NfpmPackage>;
-    apk?: Partial<NfpmPackage>;
+  scripts?: {
+    postinstall?: string;
+    preremove?: string;
+    postremove?: string;
+  };
+  deb?: {
+    fields?: {
+      Recommends?: string;
+      Bugs?: string;
+    };
+  };
+  rpm?: {
+    group?: string;
+    compression?: string;
+  };
+  apk?: {
+    [key: string]: unknown;
   };
 }
 
@@ -45,7 +65,7 @@ interface NfpmConfig {
   vendor: string;
   homepage: string;
   license: string;
-  bindir: string;
+  depends?: string[];
   contents: Array<{
     src: string;
     dst: string;
@@ -54,35 +74,32 @@ interface NfpmConfig {
       mode?: number;
     };
   }>;
-  overrides?: {
-    deb?: {
-      scripts?: {
-        postinstall?: string;
-        preremove?: string;
-      };
-      dependencies?: string[];
-      recommends?: string[];
+  scripts?: {
+    postinstall?: string;
+    preremove?: string;
+    postremove?: string;
+  };
+  deb?: {
+    fields?: {
+      Recommends?: string;
+      Bugs?: string;
     };
-    rpm?: {
-      scripts?: {
-        postinstall?: string;
-        preremove?: string;
-      };
-      dependencies?: string[];
-    };
-    apk?: {
-      scripts?: {
-        postinstall?: string;
-        preremove?: string;
-      };
-      dependencies?: string[];
-    };
+  };
+  rpm?: {
+    group?: string;
+    compression?: string;
+  };
+  apk?: {
+    [key: string]: unknown;
   };
 }
 
 /**
- * Default nfpm configuration
+ * Default nfpm configuration for simple binary packages
  * Customize per package by extending this config
+ *
+ * This is for packages with a single binary executable.
+ * For Node.js CLIs, see nodeCliNfpmConfig below.
  */
 const nfpmConfig: NfpmConfig = {
   // Package metadata
@@ -102,8 +119,8 @@ const nfpmConfig: NfpmConfig = {
   homepage: "https://github.com/shaiknoorullah/sshield",
   license: "MIT",
 
-  // Installation paths
-  bindir: "/usr/bin",
+  // Dependencies (empty by default, override per package)
+  depends: [],
 
   // Files to include in the package
   contents: [
@@ -127,55 +144,120 @@ const nfpmConfig: NfpmConfig = {
     },
   ],
 
-  // Platform-specific overrides
-  overrides: {
-    // Debian/Ubuntu (.deb)
-    deb: {
-      scripts: {
-        postinstall: `#!/bin/sh
-echo "SSHield has been installed successfully!"
+  // Scripts (common across all formats)
+  scripts: {
+    postinstall: `#!/bin/sh
+echo "\${PACKAGE_NAME} has been installed successfully!"
 echo "Run '\${BINARY_NAME} --help' to get started."
 `,
-        preremove: `#!/bin/sh
-echo "Removing SSHield..."
+    preremove: `#!/bin/sh
+echo "Removing \${PACKAGE_NAME}..."
 `,
-      },
-      dependencies: [],
-      recommends: ["openssh-client"],
-    },
+  },
 
-    // Fedora/RHEL (.rpm)
-    rpm: {
-      scripts: {
-        postinstall: `#!/bin/sh
-echo "SSHield has been installed successfully!"
-echo "Run '\${BINARY_NAME} --help' to get started."
-`,
-        preremove: `#!/bin/sh
-echo "Removing SSHield..."
-`,
-      },
-      dependencies: [],
+  // Platform-specific settings
+  deb: {
+    fields: {
+      Recommends: "openssh-client",
     },
+  },
 
-    // Alpine (.apk)
-    apk: {
-      scripts: {
-        postinstall: `#!/bin/sh
-echo "SSHield has been installed successfully!"
-echo "Run '\${BINARY_NAME} --help' to get started."
-`,
-        preremove: `#!/bin/sh
-echo "Removing SSHield..."
-`,
-      },
-      dependencies: [],
-    },
+  rpm: {
+    group: "Productivity/Networking/SSH",
+    compression: "xz",
   },
 };
 
 /**
- * Generate nfpm YAML configuration
+ * nfpm configuration template for Node.js CLI packages
+ *
+ * Node.js CLIs require:
+ * - Node.js runtime dependency
+ * - Copying entire dist/ directory (not just single binary)
+ * - Installing npm dependencies via postinstall
+ * - Wrapper script to execute the CLI
+ *
+ * Use this as a reference for Node.js-based packages.
+ */
+const nodeCliNfpmConfig: NfpmConfig = {
+  name: "${PACKAGE_NAME}",
+  arch: "amd64",
+  platform: "linux",
+  version_schema: "semver",
+
+  section: "utils",
+  priority: "optional",
+
+  maintainer: "SSHield Team <support@sshield.dev>",
+  description: "${PACKAGE_DESCRIPTION}",
+  vendor: "SSHield",
+  homepage: "https://github.com/shaiknoorullah/sshield",
+  license: "MIT",
+
+  // Node.js runtime dependency
+  depends: ["nodejs"],
+
+  contents: [
+    // Copy entire compiled directory
+    {
+      src: "./dist/",
+      dst: "/usr/lib/${PACKAGE_NAME}/",
+      type: "tree",
+    },
+    // Package metadata
+    {
+      src: "./package.json",
+      dst: "/usr/lib/${PACKAGE_NAME}/package.json",
+      type: "file",
+    },
+    // README
+    {
+      src: "./README.md",
+      dst: "/usr/share/doc/${PACKAGE_NAME}/README.md",
+      type: "doc",
+    },
+    // Executable wrapper script
+    {
+      src: "./scripts/${BINARY_NAME}.sh",
+      dst: "/usr/bin/${BINARY_NAME}",
+      type: "file",
+      file_info: {
+        mode: 0o755,
+      },
+    },
+  ],
+
+  scripts: {
+    postinstall: `#!/bin/sh
+cd /usr/lib/\${PACKAGE_NAME}
+echo "Installing Node.js dependencies..."
+npm install --production --ignore-scripts || true
+echo "\${PACKAGE_NAME} installed successfully!"
+echo "Run '\${BINARY_NAME} --help' to get started."
+`,
+    preremove: `#!/bin/sh
+echo "Removing \${PACKAGE_NAME}..."
+`,
+    postremove: `#!/bin/sh
+rm -rf /usr/lib/\${PACKAGE_NAME}/node_modules
+echo "\${PACKAGE_NAME} removed successfully!"
+`,
+  },
+
+  deb: {
+    fields: {
+      Recommends: "nodejs (>= 18.0.0)",
+    },
+  },
+
+  rpm: {
+    group: "Development/Tools",
+    compression: "xz",
+  },
+};
+
+/**
+ * Generate nfpm YAML configuration following nfpm v2 schema
  * This is used by the nfpm CLI tool
  */
 export function generateNfpmYaml(
@@ -183,10 +265,111 @@ export function generateNfpmYaml(
   packageDescription: string,
   binaryName: string,
   version: string,
+  useNodeCli = false,
 ): string {
-  const config = JSON.parse(JSON.stringify(nfpmConfig));
+  const config = JSON.parse(
+    JSON.stringify(useNodeCli ? nodeCliNfpmConfig : nfpmConfig),
+  );
 
-  // Replace placeholders
+  // Helper to replace placeholders
+  const replacePlaceholders = (str: string): string =>
+    str
+      .replace(/\$\{PACKAGE_NAME\}/g, packageName)
+      .replace(/\$\{BINARY_NAME\}/g, binaryName);
+
+  // Generate contents section
+  const contentsYaml = config.contents
+    .map(
+      (c: {
+        src: string;
+        dst: string;
+        type?: string;
+        file_info?: { mode?: number };
+      }) => {
+        const lines = [
+          `  - src: ${replacePlaceholders(c.src)}`,
+          `    dst: ${replacePlaceholders(c.dst)}`,
+        ];
+        if (c.type) {
+          lines.push(`    type: ${c.type}`);
+        }
+        if (c.file_info?.mode) {
+          lines.push(`    file_info:`);
+          lines.push(`      mode: ${c.file_info.mode.toString(8)}`);
+        }
+        return lines.join("\n");
+      },
+    )
+    .join("\n");
+
+  // Generate scripts section
+  const scriptsYaml = config.scripts
+    ? `
+scripts:
+${
+  config.scripts.postinstall
+    ? `  postinstall: |\n${config.scripts.postinstall
+        .split("\n")
+        .map((line: string) => `    ${line}`)
+        .join("\n")
+        .replace(/\$\{PACKAGE_NAME\}/g, packageName)
+        .replace(/\$\{BINARY_NAME\}/g, binaryName)}`
+    : ""
+}
+${
+  config.scripts.preremove
+    ? `  preremove: |\n${config.scripts.preremove
+        .split("\n")
+        .map((line: string) => `    ${line}`)
+        .join("\n")
+        .replace(/\$\{PACKAGE_NAME\}/g, packageName)
+        .replace(/\$\{BINARY_NAME\}/g, binaryName)}`
+    : ""
+}
+${
+  config.scripts.postremove
+    ? `  postremove: |\n${config.scripts.postremove
+        .split("\n")
+        .map((line: string) => `    ${line}`)
+        .join("\n")
+        .replace(/\$\{PACKAGE_NAME\}/g, packageName)
+        .replace(/\$\{BINARY_NAME\}/g, binaryName)}`
+    : ""
+}
+`
+    : "";
+
+  // Generate depends section
+  const dependsYaml =
+    config.depends && config.depends.length > 0
+      ? `
+depends:
+${config.depends.map((d: string) => `  - ${d}`).join("\n")}
+`
+      : "";
+
+  // Generate format-specific sections
+  const debYaml = config.deb
+    ? `
+deb:
+${
+  config.deb.fields
+    ? `  fields:\n${Object.entries(config.deb.fields)
+        .map(([k, v]) => `    ${k}: ${v}`)
+        .join("\n")}`
+    : ""
+}
+`
+    : "";
+
+  const rpmYaml = config.rpm
+    ? `
+rpm:
+${config.rpm.group ? `  group: ${config.rpm.group}` : ""}
+${config.rpm.compression ? `  compression: ${config.rpm.compression}` : ""}
+`
+    : "";
+
   const yaml = `# Generated nfpm configuration
 # https://nfpm.goreleaser.com/configuration/
 
@@ -204,75 +387,14 @@ description: ${packageDescription}
 vendor: ${config.vendor}
 homepage: ${config.homepage}
 license: ${config.license}
-
-bindir: ${config.bindir}
-
+${dependsYaml}
 contents:
-${config.contents
-  .map(
-    (c: { src: string; dst: string; type?: string; file_info?: { mode?: number } }) =>
-      `  - src: ${c.src.replace("${PACKAGE_NAME}", packageName).replace("${BINARY_NAME}", binaryName)}
-    dst: ${c.dst.replace("${PACKAGE_NAME}", packageName).replace("${BINARY_NAME}", binaryName)}
-    type: ${c.type || "file"}
-    file_info:
-      mode: ${c.file_info?.mode || 0o644}`,
-  )
-  .join("\n")}
-
-overrides:
-  deb:
-    scripts:
-      postinstall: |
-${config.overrides?.deb?.scripts?.postinstall
-  ?.split("\n")
-  .map((line: string) => `        ${line}`)
-  .join("\n")
-  .replace(/\$\{BINARY_NAME\}/g, binaryName)}
-      preremove: |
-${config.overrides?.deb?.scripts?.preremove
-  ?.split("\n")
-  .map((line: string) => `        ${line}`)
-  .join("\n")}
-    dependencies:
-${config.overrides?.deb?.dependencies?.map((d: string) => `      - ${d}`).join("\n") || "      []"}
-    recommends:
-${config.overrides?.deb?.recommends?.map((r: string) => `      - ${r}`).join("\n") || "      []"}
-
-  rpm:
-    scripts:
-      postinstall: |
-${config.overrides?.rpm?.scripts?.postinstall
-  ?.split("\n")
-  .map((line: string) => `        ${line}`)
-  .join("\n")
-  .replace(/\$\{BINARY_NAME\}/g, binaryName)}
-      preremove: |
-${config.overrides?.rpm?.scripts?.preremove
-  ?.split("\n")
-  .map((line: string) => `        ${line}`)
-  .join("\n")}
-    dependencies:
-${config.overrides?.rpm?.dependencies?.map((d: string) => `      - ${d}`).join("\n") || "      []"}
-
-  apk:
-    scripts:
-      postinstall: |
-${config.overrides?.apk?.scripts?.postinstall
-  ?.split("\n")
-  .map((line: string) => `        ${line}`)
-  .join("\n")
-  .replace(/\$\{BINARY_NAME\}/g, binaryName)}
-      preremove: |
-${config.overrides?.apk?.scripts?.preremove
-  ?.split("\n")
-  .map((line: string) => `        ${line}`)
-  .join("\n")}
-    dependencies:
-${config.overrides?.apk?.dependencies?.map((d: string) => `      - ${d}`).join("\n") || "      []"}
-`;
+${contentsYaml}
+${scriptsYaml}${debYaml}${rpmYaml}`;
 
   return yaml;
 }
 
 export default nfpmConfig;
+export { nodeCliNfpmConfig };
 export type { NfpmConfig, NfpmPackage };

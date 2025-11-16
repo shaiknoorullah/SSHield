@@ -4,6 +4,32 @@
  * pkg configuration for building standalone binaries
  * Using @yao-pkg/pkg - active fork with Node 20+ support
  * @see https://github.com/yao-pkg/pkg
+ *
+ * ⚠️ IMPORTANT LIMITATIONS:
+ *
+ * pkg ONLY supports CommonJS (CJS) format. It does NOT work with:
+ * - ESM (ECMAScript Modules)
+ * - Top-level await (ESM feature)
+ * - Modern frameworks like Ink (React for CLIs) that use ESM + top-level await
+ *
+ * If your CLI uses any of the above, pkg will NOT work. Use these alternatives instead:
+ *
+ * ✅ Recommended distribution methods:
+ * 1. npm/npx - Primary method, works perfectly with ESM
+ * 2. nfpm system packages (.deb, .rpm, .apk) - Works with ESM CLIs
+ * 3. Docker containers - Works with any Node.js app
+ *
+ * ❌ pkg is NOT compatible with:
+ * - Ink-based CLIs (uses React + top-level await)
+ * - Any CLI using top-level await
+ * - Pure ESM packages
+ *
+ * This configuration is provided for packages that:
+ * - Use pure CommonJS (no ESM, no top-level await)
+ * - Need standalone binaries for air-gapped environments
+ * - Don't use modern CLI frameworks like Ink
+ *
+ * If you're building a new CLI, strongly consider using ESM + npm/nfpm instead.
  */
 interface PkgConfig {
   scripts?: string[];
