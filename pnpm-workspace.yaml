@@ -1,0 +1,10 @@
+# @format
+
+packages:
+  - packages/*
+  - plugins/*
+  - config
+  - docs
+
+onlyBuiltDependencies:
+  - nx

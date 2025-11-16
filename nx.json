@@ -1,0 +1,121 @@
+{
+  "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "parallel": 4,
+  "targetDefaults": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": true
+    },
+    "typecheck": {
+      "cache": true
+    },
+    "lint": {
+      "cache": true
+    },
+    "@nx/js:tsc": {
+      "cache": true,
+      "dependsOn": [
+        "^build"
+      ],
+      "inputs": [
+        "production",
+        "^production"
+      ]
+    },
+    "@nx/eslint:lint": {
+      "cache": true,
+      "inputs": [
+        "default",
+        "{workspaceRoot}/.eslintrc.json",
+        "{workspaceRoot}/.eslintignore",
+        "{workspaceRoot}/eslint.config.mjs"
+      ]
+    }
+  },
+  "defaultBase": "feat-monorepo-init",
+  "namedInputs": {
+    "production": [
+      "default",
+      "!{projectRoot}/src/**/*.spec.ts",
+      "!{projectRoot}/src/**/*.test.ts",
+      "!{projectRoot}/src/**/*.e2e.ts",
+      "!{projectRoot}/.eslintrc.json",
+      "!{projectRoot}/eslint.config.mjs",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.spec.json",
+      "!{projectRoot}/src/test-setup.[jt]s",
+      "!{projectRoot}/test-setup.[jt]s"
+    ]
+  },
+  "tui": {
+    "enabled": true
+  },
+  "plugins": [
+    {
+      "plugin": "@nx/workspace",
+      "options": {}
+    },
+    {
+      "plugin": "@nx/js",
+      "options": {}
+    },
+    {
+      "plugin": "@nx/js/typescript",
+      "options": {
+        "typecheck": {
+          "targetName": "typecheck"
+        },
+        "build": {
+          "targetName": "build",
+          "configName": "tsconfig.lib.json",
+          "buildDepsName": "build-deps",
+          "watchDepsName": "watch-deps"
+        }
+      }
+    },
+    {
+      "plugin": "@nx/rollup/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps",
+        "generateExportsField": true,
+        "outputPath": "./dist",
+        "main": "src/index.ts"
+      }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
+      "plugin": "@nx/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "e2eTestTargetName": "e2e"
+      }
+    },
+    {
+      "plugin": "@nx/conformance",
+      "options": {
+        "conformanceTargetName": "conform"
+      }
+    }
+  ],
+  "generators": {
+    "@nx/js:library": {
+      "bundler": "rollup",
+      "linter": "eslint",
+      "useProjectJson": true
+    }
+  },
+  "release": {
+    "version": {
+      "preVersionCommand": "pnpm dlx nx run-many -t build"
+    }
+  }
+}

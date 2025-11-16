@@ -1,0 +1,16 @@
+{
+  "extensions": ["ts", "tsx"],
+  "spec": ["src/**/*.spec.ts", "src/**/*.spec.tsx", "src/**/*.test.ts", "src/**/*.test.tsx"],
+  "require": ["ts-node/register"],
+  "loader": "ts-node/esm",
+  "node-option": ["experimental-specifier-resolution=node", "loader=ts-node/esm"],
+  "recursive": true,
+  "timeout": 5000,
+  "reporter": "spec",
+  "color": true,
+  "exit": true,
+  "watchFiles": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.spec.ts", "src/**/*.spec.tsx", "src/**/*.test.ts", "src/**/*.test.tsx"],
+  "bail": false,
+  "fullTrace": false,
+  "checkLeaks": false
+}

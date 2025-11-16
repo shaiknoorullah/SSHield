@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": false,
+    "sourceMap": true,
+    "types": ["node", "mocha", "chai"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
+}

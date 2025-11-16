@@ -1,0 +1,37 @@
+# <%= projectName %>
+
+<%= description %>
+
+## Installation
+
+```bash
+pnpm add <%= projectName %>
+```
+
+## Usage
+
+```typescript
+import { hello } from '<%= projectName %>'
+
+console.log(hello())
+```
+
+## Development
+
+```bash
+# Build
+pnpm nx build <%= projectName %>
+
+# Test
+pnpm nx test <%= projectName %>
+
+# Lint
+pnpm nx lint <%= projectName %>
+
+# Type check
+pnpm nx typecheck <%= projectName %>
+```
+
+## License
+
+MIT

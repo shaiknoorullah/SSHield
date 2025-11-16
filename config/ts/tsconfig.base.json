@@ -1,9 +1,9 @@
 {
 	"compilerOptions": {
 		"target": "es2015",
-		"rootDir": ".",
 		"module": "commonjs",
 		"lib": ["ES2020"],
+		"baseUrl": ".",
 		"moduleResolution": "node",
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
@@ -15,14 +15,14 @@
 		"noFallthroughCasesInSwitch": true,
 		"forceConsistentCasingInFileNames": true,
 		"skipLibCheck": true,
-		"skipDefaultLibCheck": true
+		"skipDefaultLibCheck": true,
+		"paths": {
+			"@sshield/config/*": ["../../config/*"],
+			"@sshield/*": ["../../packages/*/src"],
+			"@plugins/*": ["../../plugins/*/src"],
+			"@tools/*": ["../../tools/*"],
+			"@tests/*": ["../../tests/*"]
+		}
 	},
-  "exclude": [
-    "node_modules",
-    "dist",
-    "coverage",
-    "tools/scripts/**/*.ts",
-    "docs"
-  ],
-  "references": []
+	"exclude": ["node_modules"]
 }

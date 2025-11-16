@@ -1,0 +1,73 @@
+name: "example-cli"
+arch: "amd64"
+platform: "linux"
+version: "1.0.0"
+version_schema: semver
+
+section: utils
+priority: optional
+
+maintainer: "SSHield Team <team@sshield.dev>"
+description: |
+  Example CLI application demonstrating SSHield monorepo tooling.
+  Built with TypeScript, Ink, and Commander.js.
+vendor: "SSHield"
+homepage: "https://github.com/shaiknoorullah/SSHield"
+license: "MIT"
+
+# Dependencies - require Node.js
+depends:
+  - nodejs
+
+# Files to include in the package
+contents:
+  # Compiled JavaScript files
+  - src: ./dist/
+    dst: /usr/lib/example-cli/
+    type: tree
+
+  # Package metadata
+  - src: ./package.json
+    dst: /usr/lib/example-cli/package.json
+    type: file
+
+  # README
+  - src: ./README.md
+    dst: /usr/share/doc/example-cli/README.md
+    type: doc
+
+  # Executable wrapper
+  - src: ./scripts/example-cli.sh
+    dst: /usr/bin/example-cli
+    type: file
+    file_info:
+      mode: 0755
+
+# Scripts
+scripts:
+  postinstall: |
+    #!/bin/sh
+    cd /usr/lib/example-cli
+    echo "Installing Node.js dependencies..."
+    npm install --production --ignore-scripts || true
+    echo "example-cli installed successfully!"
+    echo "Run 'example-cli --help' to get started."
+
+  preremove: |
+    #!/bin/sh
+    echo "Removing example-cli..."
+
+  postremove: |
+    #!/bin/sh
+    rm -rf /usr/lib/example-cli/node_modules
+    echo "example-cli removed successfully!"
+
+# Package format specific settings
+deb:
+  fields:
+    Recommends: nodejs (>= 18.0.0)
+    Bugs: https://github.com/shaiknoorullah/SSHield/issues
+
+rpm:
+  group: Development/Tools
+  compression: xz

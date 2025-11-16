@@ -1,0 +1,7 @@
+{
+  "extends": "@sshield/config/ts/base",
+  "compilerOptions": {
+    "rootDir": "."
+  },
+  "exclude": ["node_modules", "dist"]
+}

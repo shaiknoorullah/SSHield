@@ -1,0 +1,31 @@
+{
+    "name": "@sshield/config",
+    "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+    "sourceRoot": "config/src",
+    "projectType": "library",
+    "tags": [],
+    "targets": {
+        "build": {
+            "executor": "@nx/js:tsc",
+            "outputs": [
+                "{options.outputPath}"
+            ],
+            "cache": true,
+            "options": {
+                "outputPath": "config/dist",
+                "main": "config/src/index.ts",
+                "tsConfig": "config/tsconfig.lib.json",
+                "assets": [
+                    "*.md"
+                ],
+                "clean": true
+            }
+        },
+        "typecheck": {
+            "executor": "nx:run-commands",
+            "options": {
+                "command": "pnpm --filter @sshield/config exec tsc --noEmit --project tsconfig.json"
+            }
+        }
+    }
+}

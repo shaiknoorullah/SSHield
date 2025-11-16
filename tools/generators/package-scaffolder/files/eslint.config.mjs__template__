@@ -1,0 +1,15 @@
+/** @format */
+import { eslintConfig } from "@sshield/config"
+
+export default [
+	...eslintConfig,
+	{
+		files: ["**/*.ts"],
+		languageOptions: {
+			parserOptions: {
+				project: "./tsconfig.json",
+				tsconfigRootDir: import.meta.dirname,
+			},
+		},
+	},
+]

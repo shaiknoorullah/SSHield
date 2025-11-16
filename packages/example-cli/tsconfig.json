@@ -1,0 +1,15 @@
+{
+  "extends": "@sshield/config/ts/ui",
+  "compilerOptions": {
+    "rootDir": "."
+  },
+  "exclude": ["node_modules", "dist"],
+  "ts-node": {
+    "esm": true,
+    "experimentalSpecifierResolution": "node",
+    "compilerOptions": {
+      "module": "ESNext",
+      "jsx": "react"
+    }
+  }
+}
