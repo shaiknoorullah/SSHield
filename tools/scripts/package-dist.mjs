@@ -49,8 +49,6 @@ vendor: SSHield
 homepage: https://github.com/shaiknoorullah/sshield
 license: MIT
 
-bindir: /usr/bin
-
 contents:
   - src: ./dist/${BINARY_NAME}
     dst: /usr/bin/${BINARY_NAME}
@@ -66,41 +64,21 @@ contents:
     dst: /usr/share/doc/${PACKAGE_NAME}/LICENSE
     type: license
 
-overrides:
-  deb:
-    scripts:
-      postinstall: |
-        #!/bin/sh
-        echo "${PACKAGE_NAME} has been installed successfully!"
-        echo "Run '${BINARY_NAME} --help' to get started."
-      preremove: |
-        #!/bin/sh
-        echo "Removing ${PACKAGE_NAME}..."
-    dependencies: []
-    recommends:
-      - openssh-client
+scripts:
+  postinstall: |
+    #!/bin/sh
+    echo "${PACKAGE_NAME} has been installed successfully!"
+    echo "Run '${BINARY_NAME} --help' to get started."
+  preremove: |
+    #!/bin/sh
+    echo "Removing ${PACKAGE_NAME}..."
 
-  rpm:
-    scripts:
-      postinstall: |
-        #!/bin/sh
-        echo "${PACKAGE_NAME} has been installed successfully!"
-        echo "Run '${BINARY_NAME} --help' to get started."
-      preremove: |
-        #!/bin/sh
-        echo "Removing ${PACKAGE_NAME}..."
-    dependencies: []
+deb:
+  fields:
+    Recommends: openssh-client
 
-  apk:
-    scripts:
-      postinstall: |
-        #!/bin/sh
-        echo "${PACKAGE_NAME} has been installed successfully!"
-        echo "Run '${BINARY_NAME} --help' to get started."
-      preremove: |
-        #!/bin/sh
-        echo "Removing ${PACKAGE_NAME}..."
-    dependencies: []
+rpm:
+  group: Productivity/Networking/SSH
 `;
 
 	const nfpmPath = path.join(process.cwd(), "nfpm.yaml");

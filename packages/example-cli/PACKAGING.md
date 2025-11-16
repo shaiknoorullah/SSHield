@@ -2,11 +2,26 @@
 
 This document describes the various packaging and distribution methods available for the example-cli package.
 
+## ⚠️ Important Notice
+
+**The `bundle` and `pkg` binary targets DO NOT WORK with Ink-based CLIs** due to React's use of top-level await in ESM modules. These targets will fail with the error: "Module format 'cjs' does not support top-level await."
+
+**Working Targets:**
+- ✅ `pnpm build` - TypeScript compilation
+- ✅ `pnpm test` - Run tests
+- ✅ `pnpm typecheck` - Type checking
+- ✅ `pnpm test:coverage` - Coverage reports
+- ✅ `pnpm build:package` - System packages (.deb, .rpm, .apk, PKGBUILD)
+
+**Non-Working Targets (Ink Limitation):**
+- ❌ `pnpm build:bundle` - Fails due to top-level await
+- ❌ `pnpm build:binary` - Depends on bundle, also fails
+
 ## Table of Contents
 
 - [Testing & Coverage](#testing--coverage)
-- [Binary Packaging with pkg](#binary-packaging-with-pkg)
 - [System Packages with nfpm](#system-packages-with-nfpm)
+- [Binary Packaging Alternatives](#binary-packaging-alternatives)
 - [Requirements](#requirements)
 - [Known Limitations](#known-limitations)
 
@@ -38,44 +53,63 @@ Code coverage is generated using `c8` with the following outputs:
 
 Current coverage focuses on testable utilities and components. CLI entry points and command handlers would typically be covered by integration tests rather than unit tests.
 
-## Binary Packaging with pkg
+## Binary Packaging Alternatives
 
-The `@yao-pkg/pkg` tool can create standalone executables for multiple platforms.
+Since `pkg` does not work with Ink-based CLIs due to top-level await limitations, here are the recommended alternatives:
 
-### Building Binaries
+### Option 1: NPM Distribution (Recommended)
+
+The simplest and most effective way to distribute the CLI:
 
 ```bash
-# Build all platform binaries
-pnpm nx pkg @sshield/example-cli
+# Install globally from npm
+npm install -g @sshield/example-cli
+
+# Or run directly with npx
+npx @sshield/example-cli hello --name "World"
 ```
 
-### Output
+**Pros:**
+- Works perfectly with Ink/React
+- Automatic dependency management
+- Easy updates via npm
+- Cross-platform support
 
-Binaries are created in `packages/example-cli/bin/`:
+**Cons:**
+- Requires Node.js installed on target system
 
-- `example-cli-linux-x64` (~50MB)
-- `example-cli-linux-arm64` (~48MB)
-- `example-cli-macos-x64` (~54MB)
-- `example-cli-macos-arm64` (~48MB)
-- `example-cli-win-x64.exe` (~42MB)
-- `example-cli-win-arm64.exe` (~29MB)
+### Option 2: System Packages (nfpm)
 
-### Known Limitations
+Create native packages for Linux distributions (see below for details):
 
-**Important**: The current implementation has limitations when using `pkg` with Ink-based CLIs:
+```bash
+pnpm build:package
+```
 
-1. **ESM + Ink Compatibility**: Ink uses React with top-level await, which conflicts with CommonJS bundling required by pkg
-2. **Bytecode Compilation**: Most modules cannot be compiled to bytecode and are included as JavaScript
-3. **macOS Code Signing**: Binaries must be signed before distribution on macOS
+This generates:
+- `.deb` for Debian/Ubuntu
+- `.rpm` for Fedora/RHEL/SUSE
+- `.apk` for Alpine Linux
+- `PKGBUILD` for Arch Linux
 
-**Recommended Alternatives**:
-- For simpler CLIs without Ink: pkg works well
-- For Ink-based CLIs: Consider distributing via npm, or using system packages (see below)
-- For production: Use Docker containers or system packages
+### Option 3: Docker Container
 
-### Configuration
+Package the CLI in a Docker container:
 
-See `packages/example-cli/pkg.config.json` for pkg configuration.
+```dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm && pnpm install --frozen-lockfile
+COPY . .
+RUN pnpm build
+ENTRYPOINT ["node", "dist/src/cli.js"]
+```
+
+**Why pkg Doesn't Work**:
+- Ink uses React with top-level await
+- CommonJS format (required by pkg) doesn't support top-level await
+- Attempting to bundle results in: `RollupError: Module format "cjs" does not support top-level await`
 
 ## System Packages with nfpm
 
@@ -99,22 +133,27 @@ docker pull goreleaser/nfpm
 ### Building Packages
 
 ```bash
-# Build Debian package
-pnpm nx nfpm:deb @sshield/example-cli
+# Build all packages (recommended - uses package-dist.mjs)
+pnpm build:package
 
-# Build RPM package
-pnpm nx nfpm:rpm @sshield/example-cli
-
-# Build both
-pnpm nx nfpm:all @sshield/example-cli
+# The script generates:
+# - nfpm.yaml (package configuration)
+# - PKGBUILD (Arch Linux source)
+# - PKGBUILD.bin (Arch Linux binary)
+# - Builds .deb, .rpm, and .apk packages if nfpm is installed
 ```
 
 ### Output
 
-Packages are created in `packages/example-cli/dist-packages/`:
+Packages are created in the current directory:
 
-- `sshield-example-cli_1.0.0_amd64.deb` (Debian/Ubuntu)
-- `sshield-example-cli-1.0.0.x86_64.rpm` (RHEL/Fedora/SUSE)
+- `example-cli_1.0.0_amd64.deb` (Debian/Ubuntu)
+- `example-cli-1.0.0-1.x86_64.rpm` (RHEL/Fedora/SUSE)
+- `example-cli_1.0.0_x86_64.apk` (Alpine Linux)
+- `PKGBUILD` (Arch Linux source)
+- `PKGBUILD.bin` (Arch Linux binary)
+
+**Note**: The generated `nfpm.yaml` expects a binary at `./dist/example-cli`. For Node.js CLIs, you may need to customize this to install the full application directory instead.
 
 ### Package Installation
 
@@ -198,35 +237,63 @@ See `packages/example-cli/nfpm.yaml` for package configuration.
 ## Recommendations
 
 ### For Development & Testing
-- Use `pnpm nx test` and `pnpm nx coverage` for local development
-- Run the CLI directly with `node packages/example-cli/dist/src/cli.js`
+- ✅ Use `pnpm test` and `pnpm test:coverage` for local development
+- ✅ Run the CLI directly with `node dist/src/cli.js` (after `pnpm build`)
+- ✅ Use `pnpm typecheck` before committing
 
 ### For Distribution
 
-| Method | Best For | Limitations |
-|--------|----------|-------------|
-| **npm** | JavaScript/Node.js developers | Requires Node.js installed |
-| **System Packages** | Linux servers/workstations | Platform-specific, requires nfpm |
-| **Docker** | Containerized deployments | Requires Docker runtime |
-| **pkg Binaries** | Simple CLIs without Ink | Large file size, Ink incompatibility |
+| Method | Status | Best For | Limitations |
+|--------|--------|----------|-------------|
+| **npm/npx** | ✅ **Works** | All users, simplest method | Requires Node.js 18+ |
+| **System Packages** | ✅ **Works** | Linux production servers | Platform-specific |
+| **Docker** | ✅ **Works** | Containerized deployments | Requires Docker |
+| **pkg Binaries** | ❌ **Broken** | N/A - Doesn't work with Ink | Top-level await incompatibility |
+| **tsup Bundle** | ❌ **Broken** | N/A - Doesn't work with Ink | Top-level await incompatibility |
 
 ### Recommended Approach for Production
 
-For this Ink-based CLI, we recommend:
+For this Ink-based CLI:
 
-1. **Primary**: Distribute via npm registry
+1. **Primary (Recommended)**: Distribute via npm registry
    ```bash
+   # Install globally
    npm install -g @sshield/example-cli
-   ```
 
-2. **Alternative**: System packages (deb/rpm) for enterprise Linux deployments
+   # Or use without installing
+   npx @sshield/example-cli hello --name "World"
+   ```
+   - ✅ Simplest for users
+   - ✅ Cross-platform
+   - ✅ Automatic updates
+   - ✅ Works perfectly with Ink/React
+
+2. **Alternative**: System packages for enterprise Linux
+   ```bash
+   pnpm build:package
+   sudo dpkg -i example-cli_1.0.0_amd64.deb
+   ```
+   - ✅ Native package manager integration
+   - ✅ System-wide installation
+   - ⚠️ Requires customization for Node.js CLIs
 
 3. **Development**: Direct execution from repository
    ```bash
    pnpm install
-   pnpm nx build @sshield/example-cli
-   node packages/example-cli/dist/src/cli.js hello
+   pnpm build
+   node dist/src/cli.js hello
    ```
+
+### Why Not Standalone Binaries?
+
+Ink-based CLIs cannot be packaged with `pkg` or similar tools because:
+- React/Ink uses ESM with top-level await
+- CommonJS bundling (required by pkg) doesn't support top-level await
+- Attempting to bundle fails with rollup errors
+
+For standalone binaries, consider:
+- Rewriting the CLI without Ink (use a different terminal UI library)
+- Or accept that npm/system packages are the distribution methods
 
 ## Additional Resources
 
