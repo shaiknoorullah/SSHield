@@ -4,7 +4,7 @@ import { defineConfig } from "tsup";
 
 export default defineConfig({
 	entry: ["src/cli.ts"],
-	format: ["cjs"], // pkg requires CommonJS
+	format: ["esm"], // Use ESM - top-level await compatible
 	target: "node18",
 	outDir: "dist-bundle",
 	clean: true,
@@ -16,5 +16,9 @@ export default defineConfig({
 	treeshake: true,
 	splitting: false,
 	dts: false, // No need for types in bundled output
-	onSuccess: "echo 'Bundle created successfully'",
+	shims: true, // Add __dirname and __filename shims for ESM
+	banner: {
+		js: "#!/usr/bin/env node",
+	},
+	onSuccess: "echo 'ESM bundle created successfully'",
 });
