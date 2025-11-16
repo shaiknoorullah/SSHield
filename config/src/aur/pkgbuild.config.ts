@@ -45,7 +45,7 @@ export function generatePkgbuild(config: Partial<PkgbuildConfig>): string {
       `\${pkgname}-\${pkgver}.tar.gz::https://github.com/shaiknoorullah/sshield/releases/download/v\${pkgver}/\${pkgname}-\${pkgver}.tar.gz`,
     ],
     sha256sums = ["SKIP"],
-    maintainer = "SSHield Team <support@sshield.dev>",
+    maintainer = "SSHield Team <noor@sshield.sh>",
     contributors = [],
   } = config;
 
@@ -110,7 +110,9 @@ package() {
 /**
  * Generate PKGBUILD for binary distribution (pre-built binaries)
  */
-export function generateBinaryPkgbuild(config: Partial<PkgbuildConfig>): string {
+export function generateBinaryPkgbuild(
+  config: Partial<PkgbuildConfig>,
+): string {
   const {
     pkgname = "${PACKAGE_NAME}",
     pkgver = "${VERSION}",
@@ -123,7 +125,7 @@ export function generateBinaryPkgbuild(config: Partial<PkgbuildConfig>): string 
     optdepends = [],
     provides = [],
     conflicts = [],
-    maintainer = "SSHield Team <support@sshield.dev>",
+    maintainer = "SSHield Team <noor@sshield.sh>",
     contributors = [],
   } = config;
 

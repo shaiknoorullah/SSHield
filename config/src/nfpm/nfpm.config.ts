@@ -96,7 +96,7 @@ const nfpmConfig: NfpmConfig = {
   priority: "optional",
 
   // Maintainer information
-  maintainer: "SSHield Team <support@sshield.dev>",
+  maintainer: "SSHield Team <noor@sshield.sh>",
   description: "${PACKAGE_DESCRIPTION}",
   vendor: "SSHield",
   homepage: "https://github.com/shaiknoorullah/sshield",
@@ -210,7 +210,12 @@ bindir: ${config.bindir}
 contents:
 ${config.contents
   .map(
-    (c: { src: string; dst: string; type?: string; file_info?: { mode?: number } }) =>
+    (c: {
+      src: string;
+      dst: string;
+      type?: string;
+      file_info?: { mode?: number };
+    }) =>
       `  - src: ${c.src.replace("${PACKAGE_NAME}", packageName).replace("${BINARY_NAME}", binaryName)}
     dst: ${c.dst.replace("${PACKAGE_NAME}", packageName).replace("${BINARY_NAME}", binaryName)}
     type: ${c.type || "file"}

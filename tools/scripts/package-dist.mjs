@@ -22,8 +22,8 @@ const PACKAGE_NAME = packageJson.name.replace("@sshield/", "");
 const PACKAGE_VERSION = packageJson.version;
 const PACKAGE_DESCRIPTION = packageJson.description || "SSHield package";
 const BINARY_NAME = packageJson.bin
-  ? Object.keys(packageJson.bin)[0]
-  : PACKAGE_NAME;
+	? Object.keys(packageJson.bin)[0]
+	: PACKAGE_NAME;
 
 console.log(`📦 Packaging ${PACKAGE_NAME}@${PACKAGE_VERSION}...`);
 
@@ -31,7 +31,7 @@ console.log(`📦 Packaging ${PACKAGE_NAME}@${PACKAGE_VERSION}...`);
  * Generate nfpm.yaml configuration
  */
 function generateNfpmYaml() {
-  const nfpmYaml = `# nfpm configuration for ${PACKAGE_NAME}
+	const nfpmYaml = `# nfpm configuration for ${PACKAGE_NAME}
 # https://nfpm.goreleaser.com/configuration/
 
 name: ${PACKAGE_NAME}
@@ -43,7 +43,7 @@ version_schema: semver
 section: utils
 priority: optional
 
-maintainer: SSHield Team <support@sshield.dev>
+maintainer: SSHield Team <noor@sshield.sh>
 description: ${PACKAGE_DESCRIPTION}
 vendor: SSHield
 homepage: https://github.com/shaiknoorullah/sshield
@@ -103,17 +103,17 @@ overrides:
     dependencies: []
 `;
 
-  const nfpmPath = path.join(process.cwd(), "nfpm.yaml");
-  fs.writeFileSync(nfpmPath, nfpmYaml, "utf-8");
-  console.log(`✅ Generated nfpm.yaml`);
-  return nfpmPath;
+	const nfpmPath = path.join(process.cwd(), "nfpm.yaml");
+	fs.writeFileSync(nfpmPath, nfpmYaml, "utf-8");
+	console.log(`✅ Generated nfpm.yaml`);
+	return nfpmPath;
 }
 
 /**
  * Generate PKGBUILD for Arch Linux
  */
 function generatePkgbuild() {
-  const pkgbuild = `# Maintainer: SSHield Team <support@sshield.dev>
+	const pkgbuild = `# Maintainer: SSHield Team <noor@sshield.sh>
 
 pkgname=${PACKAGE_NAME}
 pkgver=${PACKAGE_VERSION}
@@ -153,17 +153,17 @@ package() {
 }
 `;
 
-  const pkgbuildPath = path.join(process.cwd(), "PKGBUILD");
-  fs.writeFileSync(pkgbuildPath, pkgbuild, "utf-8");
-  console.log(`✅ Generated PKGBUILD`);
-  return pkgbuildPath;
+	const pkgbuildPath = path.join(process.cwd(), "PKGBUILD");
+	fs.writeFileSync(pkgbuildPath, pkgbuild, "utf-8");
+	console.log(`✅ Generated PKGBUILD`);
+	return pkgbuildPath;
 }
 
 /**
  * Generate binary PKGBUILD for Arch Linux
  */
 function generateBinaryPkgbuild() {
-  const pkgbuild = `# Maintainer: SSHield Team <support@sshield.dev>
+	const pkgbuild = `# Maintainer: SSHield Team <noor@sshield.sh>
 
 pkgname=${PACKAGE_NAME}-bin
 pkgver=${PACKAGE_VERSION}
@@ -193,85 +193,85 @@ package() {
 }
 `;
 
-  const pkgbuildBinPath = path.join(process.cwd(), "PKGBUILD.bin");
-  fs.writeFileSync(pkgbuildBinPath, pkgbuild, "utf-8");
-  console.log(`✅ Generated PKGBUILD.bin (for binary distribution)`);
-  return pkgbuildBinPath;
+	const pkgbuildBinPath = path.join(process.cwd(), "PKGBUILD.bin");
+	fs.writeFileSync(pkgbuildBinPath, pkgbuild, "utf-8");
+	console.log(`✅ Generated PKGBUILD.bin (for binary distribution)`);
+	return pkgbuildBinPath;
 }
 
 /**
  * Build packages with nfpm
  */
 function buildPackages(nfpmPath) {
-  // Check if nfpm is installed
-  try {
-    execSync("which nfpm", { stdio: "ignore" });
-  } catch {
-    console.warn(
-      "⚠️  nfpm not found. Install it from https://nfpm.goreleaser.com/install/",
-    );
-    console.warn(
-      "   Skipping package generation. PKGBUILD files have been created.",
-    );
-    return;
-  }
+	// Check if nfpm is installed
+	try {
+		execSync("which nfpm", { stdio: "ignore" });
+	} catch {
+		console.warn(
+			"⚠️  nfpm not found. Install it from https://nfpm.goreleaser.com/install/",
+		);
+		console.warn(
+			"   Skipping package generation. PKGBUILD files have been created.",
+		);
+		return;
+	}
 
-  // Create dist directory if it doesn't exist
-  const distDir = path.join(process.cwd(), "dist");
-  if (!fs.existsSync(distDir)) {
-    fs.mkdirSync(distDir, { recursive: true });
-  }
+	// Create dist directory if it doesn't exist
+	const distDir = path.join(process.cwd(), "dist");
+	if (!fs.existsSync(distDir)) {
+		fs.mkdirSync(distDir, { recursive: true });
+	}
 
-  try {
-    // Build .deb package
-    console.log("🔨 Building .deb package...");
-    execSync(`nfpm package --packager deb --config ${nfpmPath}`, {
-      stdio: "inherit",
-    });
-    console.log("✅ Built .deb package");
+	try {
+		// Build .deb package
+		console.log("🔨 Building .deb package...");
+		execSync(`nfpm package --packager deb --config ${nfpmPath}`, {
+			stdio: "inherit",
+		});
+		console.log("✅ Built .deb package");
 
-    // Build .rpm package
-    console.log("🔨 Building .rpm package...");
-    execSync(`nfpm package --packager rpm --config ${nfpmPath}`, {
-      stdio: "inherit",
-    });
-    console.log("✅ Built .rpm package");
+		// Build .rpm package
+		console.log("🔨 Building .rpm package...");
+		execSync(`nfpm package --packager rpm --config ${nfpmPath}`, {
+			stdio: "inherit",
+		});
+		console.log("✅ Built .rpm package");
 
-    // Build .apk package (Alpine Linux)
-    console.log("🔨 Building .apk package...");
-    execSync(`nfpm package --packager apk --config ${nfpmPath}`, {
-      stdio: "inherit",
-    });
-    console.log("✅ Built .apk package");
-  } catch (error) {
-    console.error("❌ Error building packages:", error.message);
-  }
+		// Build .apk package (Alpine Linux)
+		console.log("🔨 Building .apk package...");
+		execSync(`nfpm package --packager apk --config ${nfpmPath}`, {
+			stdio: "inherit",
+		});
+		console.log("✅ Built .apk package");
+	} catch (error) {
+		console.error("❌ Error building packages:", error.message);
+	}
 }
 
 /**
  * Main function
  */
 function main() {
-  console.log("🚀 Starting package distribution...\n");
+	console.log("🚀 Starting package distribution...\n");
 
-  // Generate configurations
-  const nfpmPath = generateNfpmYaml();
-  generatePkgbuild();
-  generateBinaryPkgbuild();
+	// Generate configurations
+	const nfpmPath = generateNfpmYaml();
+	generatePkgbuild();
+	generateBinaryPkgbuild();
 
-  console.log("");
+	console.log("");
 
-  // Build packages
-  buildPackages(nfpmPath);
+	// Build packages
+	buildPackages(nfpmPath);
 
-  console.log("\n✨ Package distribution complete!");
-  console.log("\nGenerated files:");
-  console.log("  - nfpm.yaml (nfpm configuration)");
-  console.log("  - PKGBUILD (Arch Linux source package)");
-  console.log("  - PKGBUILD.bin (Arch Linux binary package)");
-  console.log("  - dist/*.deb (Debian/Ubuntu package)");
-  console.log("  - dist/*.rpm (Fedora/RHEL package)");
-  console.log("  - dist/*.apk (Alpine Linux package)");
+	console.log("\n✨ Package distribution complete!");
+	console.log("\nGenerated files:");
+	console.log("  - nfpm.yaml (nfpm configuration)");
+	console.log("  - PKGBUILD (Arch Linux source package)");
+	console.log("  - PKGBUILD.bin (Arch Linux binary package)");
+	console.log("  - dist/*.deb (Debian/Ubuntu package)");
+	console.log("  - dist/*.rpm (Fedora/RHEL package)");
+	console.log("  - dist/*.apk (Alpine Linux package)");
 }
 
 main();
