@@ -1,5 +1,5 @@
 {
-  "extends": "../../config/ts/tsconfig.base.json",
+  "extends": "@sshield/config/ts/ui",
   "compilerOptions": {
     "rootDir": "."
   },

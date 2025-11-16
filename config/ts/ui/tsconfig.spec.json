@@ -1,8 +1,9 @@
 {
-  "extends": "@sshield/config/ts/ui/spec",
+  "extends": "./tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist-spec",
-    "rootDir": "./src"
+    "composite": false,
+    "sourceMap": true,
+    "types": ["node", "react", "mocha", "chai"]
   },
   "include": [
     "src/**/*.ts",
@@ -11,6 +12,5 @@
     "src/**/*.test.ts",
     "src/**/*.spec.tsx",
     "src/**/*.test.tsx"
-  ],
-  "exclude": ["node_modules", "dist"]
+  ]
 }
